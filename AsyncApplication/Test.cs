@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AsyncApplication
@@ -27,12 +25,12 @@ namespace AsyncApplication
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            Util.WriteLog("Thread start #" + threadNumber, threadNumber);
+            Util.WriteLog("Synchronous Thread started #" + threadNumber, threadNumber);
 
             SaveWebImage saveWebImage = new SaveWebImage(threadNumber);
             saveWebImage.Do(this.websiteList);
-            
-            Util.WriteLog("Thread finish #" + threadNumber, threadNumber, stopWatch);
+
+            Util.WriteLog("Synchronous Thread finished #" + threadNumber, threadNumber, stopWatch);
         }
 
         public async Task DoTestAsync(int threadNumber)
@@ -40,14 +38,13 @@ namespace AsyncApplication
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            Util.WriteLog("Thread start #" + threadNumber, threadNumber);
+            Util.WriteLog("Asynchronous Thread started #" + threadNumber, threadNumber);
 
             SaveWebImageAsync saveWebImageAsync = new SaveWebImageAsync(threadNumber);
             await saveWebImageAsync.DoAsync(this.websiteList);
 
-            Util.WriteLog("Thread finish #" + threadNumber, threadNumber, stopWatch);
+            Util.WriteLog("Asynchronous Thread finished #" + threadNumber, threadNumber, stopWatch);
         }
 
-      
     }
 }

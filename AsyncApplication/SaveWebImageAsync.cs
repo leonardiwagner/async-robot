@@ -11,26 +11,27 @@ namespace AsyncApplication
 {
     public class SaveWebImageAsync
     {
-        private readonly int threadNumber;
-        private int aa = 0;
+        private readonly int _threadNumber;
+        private int _saveIterator = 1;
         
-
         public SaveWebImageAsync(int threadNumber)
         {
-            this.threadNumber = threadNumber;
+            this._threadNumber = threadNumber;
         }
 
         public async Task DoAsync(List<String> websiteList)
         {
-            foreach (String website in websiteList)
+            foreach (String websiteItem in websiteList)
             {
+                var website = websiteItem;
+
                 String html = await ReadWebsiteAsync(website);
                 List<String> imageList = await GetWebsiteImageListAsync(html);
 
-                
-                foreach (String image in imageList)
+                foreach (String imageItem in imageList)
                 {
-                   await Task.Run(() => this.SaveImage(website, image));
+                    var image = imageItem;
+                    await Task.Run(() => this.SaveImage(website, image));
                 }
             }
         }
@@ -55,7 +56,7 @@ namespace AsyncApplication
 
         private void SaveImage(String website, String imageUrl)
         {
-            var saveDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SaveImage\\" + threadNumber;
+            var saveDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SaveImage\\" + this._threadNumber;
             if (!Directory.Exists(saveDirectory)) Directory.CreateDirectory(saveDirectory);
 
             if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg") || imageUrl.ToLower().EndsWith(".git") || imageUrl.ToLower().EndsWith(".png"))
@@ -72,8 +73,8 @@ namespace AsyncApplication
                     WebClient webClient = new WebClient();
                     webClient.DownloadFile(imageUrl, saveDirectory + "\\" + nomeArquivo);
 
-                    Util.WriteLog("\t " + aa + " Image saved", this.threadNumber);
-                    aa++;
+                    Util.WriteLog("\t " + this._saveIterator + " Image saved", this._threadNumber);
+                    this._saveIterator++;
                 }
                 catch { }
             }
