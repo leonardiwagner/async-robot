@@ -15,6 +15,7 @@ namespace AsyncRobot.Core
     public class Robot
     {
         private MapPosition CurrentPosition;
+        private List<MapPosition> breadcrumb = new List<MapPosition>(); 
         private Land land;
         
         private char[] compass = new char[]{'W','N','E','S'};
@@ -40,17 +41,34 @@ namespace AsyncRobot.Core
             return this.land.Point(seeX, seeY);
         }
 
-        public void Move(char direction)
+        public void Move()
         {
+            List<char> avaiableMoves = new List<char>();
+
+            foreach (char direction in compass)
+            {
+                if (SeeLand(direction) == ' ')
+                {
+                    avaiableMoves.Add(direction);
+                }
+            }
+
+            char moveTo = ' ';
+            foreach (char availableMove in avaiableMoves)
+            {
+                moveTo = availableMove;
+                break;
+            }
+
             int moveX = CurrentPosition.x;
             int moveY = CurrentPosition.y;
             
-            if (direction == 'W') ++moveX;
-            if (direction == 'E') --moveX;
-            if (direction == 'N') ++moveY;
-            if (direction == 'S') --moveY;
+            if (moveTo == 'W') ++moveX;
+            if (moveTo == 'E') --moveX;
+            if (moveTo == 'N') ++moveY;
+            if (moveTo == 'S') --moveY;
 
-            
+            CurrentPosition = new MapPosition(moveX, moveY, 'R');
         }
 
         public void TurnRight() { Turn(RobotMovement.Right);}
