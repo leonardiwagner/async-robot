@@ -6,6 +6,8 @@ namespace AsyncApplication
     {
         static void Main(string[] args)
         {
+            Land land = new Land();
+            /*
             Test test = new Test();
 
             //Synchronous threads
@@ -22,7 +24,7 @@ namespace AsyncApplication
             test.DoTestAsync(3);
             test.DoTestAsync(4);
 
-            Console.Read();
+            Console.Read();*/
         }
     }
 
