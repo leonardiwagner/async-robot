@@ -7,23 +7,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AsyncApplication
+namespace AsyncRobot.Core
 {
-    public class MapPosition
-    {
-        public int x { get; private set; }
-        public int y { get; private set; }
-        public char value { get; private set; }
-
-        public MapPosition(int x, int y, char value)
-        {
-            this.x = x;
-            this.y = y;
-            this.value = value;
-        }
-        
-    }
-
     public class Land
     {
         private List<MapPosition> mapList = new List<MapPosition>();
@@ -61,7 +46,6 @@ namespace AsyncApplication
             AddLine("## ############           ####### ########## ####");
             AddLine("##R############################## ###############");
 
-            
         }
 
         public void AddLine(String line)
@@ -69,10 +53,10 @@ namespace AsyncApplication
             char[] items = line.ToCharArray();
             for (int i = 0; i < items.Length; i++)
             {
-                this.mapList.Add(new MapPosition(i, y));
+                this.mapList.Add(new MapPosition(i, y, items[i]));
 
                 if(items[i] == 'R')
-                    RobotStartPosition = new MapPosition(items[i],y);
+                    RobotStartPosition = new MapPosition(items[i],y, 'R');
             }
             y++;
         }

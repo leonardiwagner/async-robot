@@ -7,8 +7,8 @@
     <ProjectGuid>{7FEE6B57-9210-4335-B274-AD6111A023D5}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AsyncApplication</RootNamespace>
-    <AssemblyName>AsyncApplication</AssemblyName>
+    <RootNamespace>AsyncRobot.Core</RootNamespace>
+    <AssemblyName>AsyncRobot.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Land.cs" />
+    <Compile Include="LandObject.cs" />
+    <Compile Include="MapPosition.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Robot.cs" />

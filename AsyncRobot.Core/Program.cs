@@ -6,7 +6,7 @@ namespace AsyncApplication
     {
         static void Main(string[] args)
         {
-            Land land = new Land();
+           // Land land = new Land();
             /*
             Test test = new Test();
 
