@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,11 @@ namespace AsyncRobot.Core
         {
             this.x = x;
             this.y = y;
+            this.value = value;
+        }
+
+        public void SetValue(char value)
+        {
             this.value = value;
         }
     }

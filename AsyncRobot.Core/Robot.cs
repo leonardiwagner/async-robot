@@ -24,21 +24,21 @@ namespace AsyncRobot.Core
         public Robot(Land land)
         {
             this.land = land;
-            CurrentPosition = land.RobotStartPosition;
+            CurrentPosition = land.Robot;
             Direction = 'N';
         }
 
-        public char SeeLand(char direction)
+        public MapPosition SeeLand(char direction)
         {
             int seeX = CurrentPosition.x;
             int seeY = CurrentPosition.y;
             
-            if (direction == 'W') ++seeX;
-            if (direction == 'E') --seeX;
-            if (direction == 'N') ++seeY;
-            if (direction == 'S') --seeY;
+            if (direction == 'W') --seeX;
+            if (direction == 'E') ++seeX;
+            if (direction == 'N') --seeY;
+            if (direction == 'S') ++seeY;
 
-            return this.land.Point(seeX, seeY);
+            return new MapPosition(seeX, seeY, this.land.Point(seeX, seeY));
         }
 
         public void Move()
@@ -47,28 +47,47 @@ namespace AsyncRobot.Core
 
             foreach (char direction in compass)
             {
-                if (SeeLand(direction) == ' ')
+                if (SeeLand(direction).value == ' ')
                 {
                     avaiableMoves.Add(direction);
                 }
             }
 
             char moveTo = ' ';
-            foreach (char availableMove in avaiableMoves)
+            for(int i = 0; i <avaiableMoves.Count();i++)
             {
-                moveTo = availableMove;
-                break;
+                var seeLand = SeeLand(avaiableMoves[i]);
+                List<MapPosition> wasThere = breadcrumb
+                    .Where(horizontal => horizontal.x == seeLand.x)
+                    .Where(vertical => vertical.y == seeLand.y).ToList();
+
+                if (wasThere == null || wasThere.Count == 0)
+                {
+                    moveTo = avaiableMoves[i];
+                    break;
+                }
+
+                if (i == avaiableMoves.Count() - 1)
+                {
+                    moveTo = avaiableMoves[i];
+                    break;
+                }
             }
 
             int moveX = CurrentPosition.x;
             int moveY = CurrentPosition.y;
             
-            if (moveTo == 'W') ++moveX;
-            if (moveTo == 'E') --moveX;
-            if (moveTo == 'N') ++moveY;
-            if (moveTo == 'S') --moveY;
+            if (moveTo == 'W') --moveX;
+            if (moveTo == 'E') ++moveX;
+            if (moveTo == 'N') --moveY;
+            if (moveTo == 'S') ++moveY;
 
             CurrentPosition = new MapPosition(moveX, moveY, 'R');
+            land.Robot.SetValue(' ');
+            land.Robot = CurrentPosition;
+            var aaa = land.mapList.Where(h => h.x == CurrentPosition.x).Where(v => v.y == CurrentPosition.y).First();
+            aaa.SetValue('R');
+            breadcrumb.Add(CurrentPosition);
         }
 
         public void TurnRight() { Turn(RobotMovement.Right);}
