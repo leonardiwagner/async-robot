@@ -11,29 +11,14 @@ namespace AsyncRobot.Core
 {
     public class Land
     {
-        public List<MapPosition> mapList = new List<MapPosition>();
-        public MapPosition Robot { get; set; }
+        public List<LandPosition> mapList = new List<LandPosition>();
+        public LandPosition Robot { get; set; }
 
         private int y = 0;
 
-        public StringBuilder PrintLand()
+        public List<LandPosition> Read()
         {
-            var returnString = new StringBuilder();
-            var ordenedMap = mapList.OrderBy(vertical => vertical.y).ThenBy(horizontal => horizontal.x).ToList();
-
-            int lastY = 0;
-            foreach(var mapItem in ordenedMap)
-            {
-                if (lastY != mapItem.y)
-                {
-                    returnString.Append("\n");
-                    lastY = mapItem.y;
-                }
-
-                returnString.Append(mapItem.value);
-            }
-
-            return returnString;
+            return mapList.OrderBy(vertical => vertical.y).ThenBy(horizontal => horizontal.x).ToList();
         }
 
         public char Point(int x, int y)
@@ -76,11 +61,11 @@ namespace AsyncRobot.Core
             {
                 if (items[i] == 'R')
                 { 
-                    Robot = new MapPosition(i, y, 'R');
+                    Robot = new LandPosition(i, y, 'R');
                     items[i] = ' ';
                 }
 
-                this.mapList.Add(new MapPosition(i, y, items[i]));
+                this.mapList.Add(new LandPosition(i, y, items[i]));
 
                 
             }

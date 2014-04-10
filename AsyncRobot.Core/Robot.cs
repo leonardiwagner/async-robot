@@ -14,8 +14,8 @@ namespace AsyncRobot.Core
     }
     public class Robot
     {
-        private MapPosition CurrentPosition;
-        private List<MapPosition> breadcrumb = new List<MapPosition>(); 
+        private LandPosition CurrentPosition;
+        private List<LandPosition> breadcrumb = new List<LandPosition>(); 
         private Land land;
         
         private char[] compass = new char[]{'W','N','E','S'};
@@ -28,7 +28,7 @@ namespace AsyncRobot.Core
             Direction = 'N';
         }
 
-        public MapPosition SeeLand(char direction)
+        public LandPosition SeeLand(char direction)
         {
             int seeX = CurrentPosition.x;
             int seeY = CurrentPosition.y;
@@ -38,7 +38,7 @@ namespace AsyncRobot.Core
             if (direction == 'N') --seeY;
             if (direction == 'S') ++seeY;
 
-            return new MapPosition(seeX, seeY, this.land.Point(seeX, seeY));
+            return new LandPosition(seeX, seeY, this.land.Point(seeX, seeY));
         }
 
         public void Move()
@@ -57,7 +57,7 @@ namespace AsyncRobot.Core
             for(int i = 0; i <avaiableMoves.Count();i++)
             {
                 var seeLand = SeeLand(avaiableMoves[i]);
-                List<MapPosition> wasThere = breadcrumb
+                List<LandPosition> wasThere = breadcrumb
                     .Where(horizontal => horizontal.x == seeLand.x)
                     .Where(vertical => vertical.y == seeLand.y).ToList();
 
@@ -82,7 +82,7 @@ namespace AsyncRobot.Core
             if (moveTo == 'N') --moveY;
             if (moveTo == 'S') ++moveY;
 
-            CurrentPosition = new MapPosition(moveX, moveY, 'R');
+            CurrentPosition = new LandPosition(moveX, moveY, 'R');
             land.Robot.SetValue(' ');
             land.Robot = CurrentPosition;
             var aaa = land.mapList.Where(h => h.x == CurrentPosition.x).Where(v => v.y == CurrentPosition.y).First();

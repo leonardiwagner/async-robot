@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace AsyncRobot.Core
 {
-    public class MapPosition
+    public class LandPosition
     {
         public int x { get; private set; }
         public int y { get; private set; }
         public char value { get; private set; }
 
-        public MapPosition(int x, int y, char value)
+        public LandPosition(int x, int y, char value)
         {
             this.x = x;
             this.y = y;

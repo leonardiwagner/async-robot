@@ -46,7 +46,7 @@
             },
             coffee: {
                 files: ['./Content/js/*.coffee'],
-                tasks: ['coffee', 'uglify']
+                tasks: ['coffee']
             }
         }
     });
@@ -59,5 +59,5 @@
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
     // Default task(s).
-    grunt.registerTask('default', ['stylus', 'cssmin', 'coffee', 'uglify']);
+    grunt.registerTask('default', ['stylus', 'cssmin', 'coffee']);
 };
