@@ -1,9 +1,33 @@
 
-/* line 3 : C:\Users\wagner\Documents\GitHub\csharp-asynchronous\AsyncRobot.Web\Content\css\main.styl */
+/* line 21 : C:\Users\wagner.leonardi\Documents\GitHub\async-robot\AsyncRobot.Web\Content\css\main.styl */
 
-/* line 1 : C:\Users\wagner\Documents\GitHub\csharp-asynchronous\AsyncRobot.Web\node_modules\grunt-contrib-stylus\node_modules\stylus\lib\functions\index.styl */
+/* line 1 : C:\Users\wagner.leonardi\Documents\GitHub\async-robot\AsyncRobot.Web\node_modules\grunt-contrib-stylus\node_modules\stylus\lib\functions\index.styl */
 
-/* line 1 : C:\Users\wagner\Documents\GitHub\csharp-asynchronous\AsyncRobot.Web\Content\css\main.styl */
-class {
-  color: rgba(0,0,0,0) 0;
+/* line 1 : C:\Users\wagner.leonardi\Documents\GitHub\async-robot\AsyncRobot.Web\Content\css\main.styl */
+#maze {
+  width: 100%;
+  background-color: #f00;
+}
+
+/* line 5 : C:\Users\wagner.leonardi\Documents\GitHub\async-robot\AsyncRobot.Web\Content\css\main.styl */
+#maze .line {
+  width: 100%;
+  background-color: #ff0;
+  float: left;
+}
+
+/* line 10 : C:\Users\wagner.leonardi\Documents\GitHub\async-robot\AsyncRobot.Web\Content\css\main.styl */
+#maze .wall {
+  width: 10px;
+  height: 10px;
+  background-color: #008000;
+  float: left;
+}
+
+/* line 16 : C:\Users\wagner.leonardi\Documents\GitHub\async-robot\AsyncRobot.Web\Content\css\main.styl */
+#maze .space {
+  width: 10px;
+  height: 10px;
+  background-color: #fff;
+  float: left;
 }

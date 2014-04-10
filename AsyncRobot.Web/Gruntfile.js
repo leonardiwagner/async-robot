@@ -1,6 +1,6 @@
 ﻿module.exports = function (grunt) {
     grunt.initConfig({
-      
+        pkg: grunt.file.readJSON('package.json'),
         stylus: {
             compile: {
                 options: {
@@ -60,4 +60,5 @@
 
     // Default task(s).
     grunt.registerTask('default', ['stylus', 'cssmin', 'coffee']);
+    //grunt.registerTask('watch', ['stylus', 'cssmin', 'coffee']);
 };

@@ -15,6 +15,9 @@ namespace AsyncRobot.Web.Api
 {
     public class AsyncRobotHub : Hub
     {
+        private Core.Land Land;
+        private List<Core.Robot> RobotList = new List<Core.Robot>();
+
         public void Configuration(IAppBuilder app)
         {
             // Any connection or hub wire up and configuration should go here
@@ -26,9 +29,18 @@ namespace AsyncRobot.Web.Api
             Clients.All.hello();
         }
 
+        public void AddRobot()
+        {
+            this.RobotList.Add(new Core.Robot(this.Land)
+            {
+                Direction = 'N'
+            });
+        }
+
         public void RequestMazeCreation()
         {
             var land = new Core.Land();
+            this.Land = land;
             var serializer = new JavaScriptSerializer();
 
             var MazePositions = land.Read();
