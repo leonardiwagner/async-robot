@@ -1,0 +1,16 @@
+﻿{
+  "name": "async-robot",
+  "description": "robots and stuff",
+  "author": "Wagner Leonardi (leonardiwagner@gmail.com)",
+  "dependencies": {
+    "grunt": "0.4.4",
+    "grunt-contrib-coffee": "x.x.x",
+    "grunt-contrib-stylus": "0.14.0",
+	"grunt-contrib-cssmin": "0.9.0",
+	"grunt-contrib-jshint": "0.10.0",
+	"grunt-contrib-concat": "x.x.x",
+	"grunt-contrib-uglify": "0.4.0",
+	"grunt-contrib-watch": "x.x.x"
+  },
+  "engine": "node >= 0.10"
+}
