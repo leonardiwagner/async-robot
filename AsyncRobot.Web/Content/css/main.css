@@ -1,5 +1,5 @@
 
-/* line 19 : C:\Users\wagner\Documents\GitHub\csharp-asynchronous\AsyncRobot.Web\Content\css\main.styl */
+/* line 22 : C:\Users\wagner\Documents\GitHub\csharp-asynchronous\AsyncRobot.Web\Content\css\main.styl */
 
 /* line 1 : C:\Users\wagner\Documents\GitHub\csharp-asynchronous\AsyncRobot.Web\node_modules\grunt-contrib-stylus\node_modules\stylus\lib\functions\index.styl */
 
@@ -15,15 +15,20 @@
 }
 
 /* line 8 : C:\Users\wagner\Documents\GitHub\csharp-asynchronous\AsyncRobot.Web\Content\css\main.styl */
+#maze .mazeObject {
+  cursor: pointer;
+}
+
+/* line 11 : C:\Users\wagner\Documents\GitHub\csharp-asynchronous\AsyncRobot.Web\Content\css\main.styl */
 #maze .wall {
   width: 10px;
   height: 10px;
   float: left;
   background-color: #009600;
-  box-shadow: 2px 2px 3px 1px #000;
+  box-shadow: 2px 2px 3px 1px #323232;
 }
 
-/* line 15 : C:\Users\wagner\Documents\GitHub\csharp-asynchronous\AsyncRobot.Web\Content\css\main.styl */
+/* line 18 : C:\Users\wagner\Documents\GitHub\csharp-asynchronous\AsyncRobot.Web\Content\css\main.styl */
 #maze .space {
   width: 10px;
   height: 10px;
