@@ -42,7 +42,7 @@
         watch: {
             stylus: {
                 files: ['./Content/css/*.styl'],
-                tasks: ['stylus', 'cssmin']
+                tasks: ['stylus']
             },
             coffee: {
                 files: ['./Content/js/*.coffee'],

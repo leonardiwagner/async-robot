@@ -104,6 +104,7 @@
   <ItemGroup>
     <None Include="Content\js\maze.coffee" />
     <None Include="Content\css\main.styl" />
+    <Content Include="Content\css\bootstrap.min.css" />
     <Content Include="Global.asax" />
     <Content Include="Gruntfile.js" />
     <Content Include="package.json" />

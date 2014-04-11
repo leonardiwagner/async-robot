@@ -14,7 +14,7 @@ namespace AsyncRobot.Test
         public void Init()
         {
             land = new Land();
-            robot = new Robot(land);
+            robot = new Robot(land,0);
         }
         
         [Test]

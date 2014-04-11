@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Script.Serialization;
-
-
+using AsyncRobot.Core;
 using Microsoft.AspNet.SignalR;
 
 using Owin;
@@ -29,12 +30,42 @@ namespace AsyncRobot.Web.Api
             Clients.All.hello();
         }
 
-        public void AddRobot()
+
+
+        public async Task RunRobots(int robotCount)
         {
-            this.RobotList.Add(new Core.Robot(this.Land)
+            var land = new Core.Land();
+            var robotList = new List<Core.Robot>();
+            for (int i = 0; i < robotCount; i++)
             {
-                Direction = 'N'
-            });
+                var robot = new Robot(land, i);
+                robot.Moved += robot_Moved;
+                robotList.Add(robot);
+                
+            }
+
+            foreach(var robot in robotList)
+                robot.MoveX();
+        }
+
+        void robot_Moved(object sender, MyEventArgs e)
+        {
+            Clients.All.printTask(e.Log);
+        }
+       
+
+        public void TaskMock()
+        {
+            for(int i =0;i<10;i++)
+            { 
+                Thread.Sleep(2000);
+                PrintTask("ae " + i);
+            }
+        }
+
+        public void PrintTask(string taskString)
+        {
+            Clients.All.printTask(taskString);
         }
 
         public void RequestMazeCreation()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AsyncRobot.Core
@@ -12,17 +13,39 @@ namespace AsyncRobot.Core
         Right,
         Left
     }
+
+    public class MyEventArgs : EventArgs
+    {
+        public string Log { get; private set; }
+        public MyEventArgs(string log)
+        {
+            this.Log = log;
+        }
+    }
+
     public class Robot
     {
+        public event EventHandler<MyEventArgs> Moved;
+        protected virtual async Task OnMove(string log)
+        {
+            EventHandler<MyEventArgs> handler = Moved;
+            if (handler != null)
+            {
+                handler(this, new MyEventArgs(log));
+            }
+        }
+
         private LandPosition CurrentPosition;
         private List<LandPosition> breadcrumb = new List<LandPosition>(); 
         private Land land;
+        private int id;
         
         private char[] compass = new char[]{'W','N','E','S'};
         public char Direction { get; set; }
 
-        public Robot(Land land)
+        public Robot(Land land, int id)
         {
+            this.id = id;
             this.land = land;
             CurrentPosition = land.Robot;
             Direction = 'N';
@@ -41,6 +64,13 @@ namespace AsyncRobot.Core
             return new LandPosition(seeX, seeY, this.land.Point(seeX, seeY));
         }
 
+        public async Task MoveX()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+               Task.Run(() => Move());
+            }
+        }
         public void Move()
         {
             List<char> avaiableMoves = new List<char>();
@@ -88,6 +118,14 @@ namespace AsyncRobot.Core
             var aaa = land.mapList.Where(h => h.x == CurrentPosition.x).Where(v => v.y == CurrentPosition.y).First();
             aaa.SetValue('R');
             breadcrumb.Add(CurrentPosition);
+
+            for (int i = 0; i < 20000; i++)
+            {
+                var x = i - 1000;
+            }
+
+            
+            Moved(this,new MyEventArgs(this.id + " move"));
         }
 
         public void TurnRight() { Turn(RobotMovement.Right);}
