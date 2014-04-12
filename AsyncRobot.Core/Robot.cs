@@ -1,27 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace AsyncRobot.Core
 {
-    public enum RobotMovement
+    public class RobotMoveArgs : EventArgs
     {
-        Right,
-        Left
-    }
-
-    public class MyEventArgs : EventArgs
-    {
-        public int Id { get; private set; }
+        public int RobotId { get; private set; }
         public int X { get; private set; }
         public int Y { get; private set; }
-        public MyEventArgs(int id, int x, int y)
+        public RobotMoveArgs(int id, int x, int y)
         {
-            this.Id = id;
+            this.RobotId = id;
             this.X = x;
             this.Y = y;
         }
@@ -29,73 +20,75 @@ namespace AsyncRobot.Core
 
     public class Robot
     {
-        public event EventHandler<MyEventArgs> Moved;
-        protected virtual async Task OnMove(int id, int x, int y)
-        {
-            EventHandler<MyEventArgs> handler = Moved;
-            if (handler != null)
-            {
-                handler(this, new MyEventArgs(id, x, y));
-            }
-        }
-
+        private Land Land;
         private LandPosition CurrentPosition;
-        private List<LandPosition> breadcrumb = new List<LandPosition>(); 
-        private Land land;
-        private int id;
-        
-        private char[] compass = new char[]{'W','N','E','S'};
+        private List<LandPosition> Breadcrumb = new List<LandPosition>(); 
+        private int Id;
+        private char[] Compass = {'W','N','E','S'};
+        private bool HasReachedExit = false;
         public char Direction { get; set; }
+
+        public event EventHandler<RobotMoveArgs> Moved;
+        public event EventHandler<RobotMoveArgs> Reached;
 
         public Robot(Land land, int id, int positionX, int positionY)
         {
-            this.id = id;
-            this.land = land;
-            CurrentPosition = new LandPosition(positionX ,positionY,' ');
+            this.Id = id;
+            this.Land = land;
+            CurrentPosition = new LandPosition(positionX ,positionY);
             Direction = 'N';
         }
 
-        public LandPosition SeeLand(char direction)
+        /// <summary>
+        /// Look at near land object
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <returns></returns>
+        private LandPosition SeeLand(char direction)
         {
-            int seeX = CurrentPosition.x;
-            int seeY = CurrentPosition.y;
+            int seeX = CurrentPosition.X;
+            int seeY = CurrentPosition.Y;
             
             if (direction == 'W') --seeX;
             if (direction == 'E') ++seeX;
             if (direction == 'N') --seeY;
             if (direction == 'S') ++seeY;
 
-            return new LandPosition(seeX, seeY, this.land.Point(seeX, seeY));
+            return new LandPosition(seeX, seeY, this.Land.GetPosition(seeX, seeY));
         }
 
-        public async Task ExploreLand()
-        {
-            for (int i = 0; i < 100; i++)
-            {
-               await Task.Run(() => Move());
-            }
-        }
+        /// <summary>
+        /// Make a movement in the land
+        /// </summary>
         public void Move()
         {
+            //Look where it can goes in the land
             List<char> avaiableMoves = new List<char>();
-
-            foreach (char direction in compass)
+            foreach (char direction in Compass)
             {
-                if (SeeLand(direction).value == ' ')
+                char seeLand = SeeLand(direction).Value;
+
+                if (seeLand == default(char))
+                {
+                    HasReachedExit = true;
+                    Reached(this, new RobotMoveArgs(this.Id, this.CurrentPosition.X, this.CurrentPosition.Y));
+                }
+                else if (seeLand == ' ')
                 {
                     avaiableMoves.Add(direction);
                 }
             }
 
+            //Choose the best position to go
             char moveTo = ' ';
-            for(int i = 0; i <avaiableMoves.Count();i++)
+            for (int i = 0; i < avaiableMoves.Count(); i++)
             {
                 var seeLand = SeeLand(avaiableMoves[i]);
-                List<LandPosition> wasThere = this.breadcrumb
-                    .Where(horizontal => horizontal.x == seeLand.x)
-                    .Where(vertical => vertical.y == seeLand.y).ToList();
+                List<LandPosition> wasThereBefore = this.Breadcrumb
+                    .Where(horizontal => horizontal.X == seeLand.X)
+                    .Where(vertical => vertical.Y == seeLand.Y).ToList();
 
-                if (wasThere == null || wasThere.Count == 0)
+                if (wasThereBefore.Count == 0)
                 {
                     moveTo = avaiableMoves[i];
                     break;
@@ -108,82 +101,31 @@ namespace AsyncRobot.Core
                 }
             }
 
-            int moveX = CurrentPosition.x;
-            int moveY = CurrentPosition.y;
-            
+            //Set move to chosen position
+            int moveX = CurrentPosition.X;
+            int moveY = CurrentPosition.Y;
+
             if (moveTo == 'W') --moveX;
             if (moveTo == 'E') ++moveX;
             if (moveTo == 'N') --moveY;
             if (moveTo == 'S') ++moveY;
 
-            CurrentPosition = new LandPosition(moveX, moveY, 'R');
-            breadcrumb.Add(CurrentPosition);
+            this.CurrentPosition = new LandPosition(moveX, moveY);
+            this.Breadcrumb.Add(CurrentPosition);
 
-            int a = 0;
-            for (int i = 0; i < 400000; i ++)
+            Moved(this, new RobotMoveArgs(this.Id, CurrentPosition.X, CurrentPosition.Y));
+        }
+
+        /// <summary>
+        /// Explore land untill it reaches a exit
+        /// </summary>
+        /// <returns></returns>
+        public async Task ExploreLandAsync()
+        {
+            do
             {
-                a++;
-            }
-
-            Moved(this, new MyEventArgs(this.id, CurrentPosition.x, CurrentPosition.y));
+                await Task.Run(() => Move());
+            } while (!HasReachedExit);
         }
-
-        public void TurnRight() { Turn(RobotMovement.Right);}
-        public void TurnLeft() { Turn(RobotMovement.Left); }
-
-        private void Turn(RobotMovement movement)
-        {
-            int currentDirectionPosition = Array.IndexOf(compass, Direction);
-            int changeDirectionPosition = 0;
-
-            if (movement == RobotMovement.Right) changeDirectionPosition = currentDirectionPosition + 1;
-            if (movement == RobotMovement.Left) changeDirectionPosition = currentDirectionPosition - 1;
-
-            //rotate compass
-            if (changeDirectionPosition == compass.Length) changeDirectionPosition = 0;
-            if (changeDirectionPosition < 0) changeDirectionPosition = compass.Length - 1;
-
-            Direction = compass[changeDirectionPosition];
-        }
-
-        
-
-        public void x()
-        {
-            
-        }
-
-        private bool CanGoUp()
-        {
-            if (land.Point(CurrentPosition.x + 1, CurrentPosition.y) == ' ')
-                return true;
-            else
-                return false;
-        }
-
-        private bool CanGoDown()
-        {
-            if (land.Point(CurrentPosition.x - 1, CurrentPosition.y) == ' ')
-                return true;
-            else
-                return false;
-        }
-
-        private bool CanGoLeft()
-        {
-            if (land.Point(CurrentPosition.x, CurrentPosition.y - 1) == ' ')
-                return true;
-            else
-                return false;
-        }
-
-        private bool CanGoRight()
-        {
-            if (land.Point(CurrentPosition.x, CurrentPosition.y + 1) == ' ')
-                return true;
-            else
-                return false;
-        }
-
     }
 }

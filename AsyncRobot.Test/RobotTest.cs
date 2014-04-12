@@ -25,7 +25,7 @@ namespace AsyncRobot.Test
         public void TurnRight(char initial, char expected)
         {
             robot.Direction = initial;
-            robot.TurnRight();
+            //robot.TurnRight();
 
             Assert.AreEqual(expected, robot.Direction);
         }
@@ -39,7 +39,7 @@ namespace AsyncRobot.Test
         public void TurnLeft(char initial,char expected)
         {
             robot.Direction = initial;
-            robot.TurnLeft();
+            //robot.TurnLeft();
 
             Assert.AreEqual(expected, robot.Direction);
         }

@@ -1,28 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AsyncRobot.Core
+﻿namespace AsyncRobot.Core
 {
     public class LandPosition
     {
-        public int x { get; private set; }
-        public int y { get; private set; }
-        public char value { get; private set; }
+        public int X { get; private set; }
+        public int Y { get; private set; }
+        public LandObject Value { get; private set; }
 
-        public LandPosition(int x, int y, char value)
+        public LandPosition(int x, int y) : this(x, y, null){}
+
+        public LandPosition(int x, int y, LandObject value)
         {
-            this.x = x;
-            this.y = y;
-            this.value = value;
+            this.X = x;
+            this.Y = y;
+            this.Value = value;
         }
 
-        public void SetValue(char value)
+        public void SetValue(LandObject value)
         {
-            this.value = value;
+            this.Value = value;
         }
     }
 }

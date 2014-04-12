@@ -1,31 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AsyncRobot.Core
 {
     public class Land
     {
-        public List<LandPosition> map = new List<LandPosition>();
-        public LandPosition Robot { get; set; }
+        public List<LandPosition> Map = new List<LandPosition>();
 
-        private readonly int width;
-        private readonly int height;
-
+        /// <summary>
+        /// Draw full land with "wall"
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public Land(int width, int height)
         {
-            this.width = width;
-            this.height = height;
-
             int area = width*height;
             int y = 0;
             int x = 0;
+
             for (int i = 0; i < area; i++)
             {
                 if (x == height)
@@ -34,33 +26,36 @@ namespace AsyncRobot.Core
                     y++;
                 }
 
-                map.Add(new LandPosition(x,y,'#'));
+                this.Map.Add(new LandPosition(x,y,LandObject.WALL));
 
                 x++;
             }
         }
 
-        public void AddTrackPoint(int x, int y)
+        /// <summary>
+        /// Replace a position with other value
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="landObject"></param>
+        public void SetPosition(int x, int y, LandObject landObject)
         {
-            var point = map.Where(horizontal => horizontal.x == x).Where(vertical => vertical.y == y).First();
-            point.SetValue(' ');
+            var point = Map.Where(horizontal => horizontal.X == x).Where(vertical => vertical.X == y).First();
+            point.SetValue(landObject);
         }
 
-        public List<LandPosition> Read()
+        /// <summary>
+        /// Read position value
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public LandObject GetPosition(int x, int y)
         {
-            return map.OrderBy(vertical => vertical.y).ThenBy(horizontal => horizontal.x).ToList();
+            return this.Map
+                .Where(horizontal => horizontal.X == x)
+                .Where(vertical => vertical.Y == y)
+                .Select(point => point.Value).FirstOrDefault();
         }
-
-        public char Point(int x, int y)
-        {
-            return map
-                .Where(horizontal => horizontal.x == x)
-                .Where(vertical => vertical.y == y)
-                .Select(point => point.value).FirstOrDefault();
-        }
-
-        
-
-        
     }
 }
