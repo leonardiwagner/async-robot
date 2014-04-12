@@ -102,6 +102,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="bower_components\requirejs\require.js" />
+    <Content Include="Content\css\async-robot.min.css" />
+    <Content Include="Content\js\async-robot.js" />
+    <Content Include="Content\js\async-robot.min.js" />
+    <Content Include="Content\js\index.coffee" />
+    <Content Include="Content\js\hub.coffee" />
+    <Content Include="Content\js\console.coffee" />
+    <Content Include="bower.json" />
     <None Include="Content\js\maze.coffee" />
     <None Include="Content\css\main.styl" />
     <Content Include="Content\css\bootstrap.min.css" />
@@ -128,7 +136,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Api\AsyncRobotHub.cs" />
+    <Compile Include="WebSocket\AsyncRobotHub.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

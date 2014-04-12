@@ -7,15 +7,14 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Script.Serialization;
-using System.Web.WebPages.Instrumentation;
 using AsyncRobot.Core;
 using Microsoft.AspNet.SignalR;
 using Newtonsoft.Json;
 using Owin;
 using Microsoft.Owin;
 
-[assembly: OwinStartup(typeof(AsyncRobot.Web.Api.AsyncRobotHub))]
-namespace AsyncRobot.Web.Api
+[assembly: OwinStartup(typeof(AsyncRobot.Web.WebSocket.AsyncRobotHub))]
+namespace AsyncRobot.Web.WebSocket
 {
     public class LandJson
     {
@@ -42,11 +41,6 @@ namespace AsyncRobot.Web.Api
             app.MapSignalR();
         }
 
-        public void Hello()
-        {
-            Clients.All.hello();
-        }
-
         public void RunRobot(string landJson, string robotJson)
         {
             var landClient = JsonConvert.DeserializeObject<LandJson>(landJson);
@@ -54,21 +48,27 @@ namespace AsyncRobot.Web.Api
 
             Core.Land land = new Land(landClient.width, landClient.height);
             foreach(var landPoint in landClient.track)
-                land.AddTrackPoint(landPoint.x, landPoint.y);
+                land.SetPosition(landPoint.x, landPoint.y, LandObject.SPACE);
             
             List<Core.Robot> robotList = new List<Robot>();
             foreach (var robot in robotClient)
             {
                 var r = new Robot(land, robot.id, robot.x, robot.y);
-                r.Moved += r_Moved;
-                r.ExploreLand();
+                r.Moved +=r_Moved;
+                r.Reached += r_Reached;
+                r.ExploreLandAsync();
             }
 
         }
 
-        void r_Moved(object sender, MyEventArgs e)
+        void r_Reached(object sender, RobotMoveArgs e)
         {
-            Clients.All.setRobot(e.Id,e.X, e.Y);
+            Clients.All.setRobot(e.RobotId, e.X, e.Y);
+        }
+
+        void r_Moved(object sender, RobotMoveArgs e)
+        {
+            Clients.All.setRobot(e.RobotId,e.X, e.Y);
         }
 
        
