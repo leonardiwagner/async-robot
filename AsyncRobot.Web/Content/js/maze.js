@@ -1,6 +1,6 @@
 (function() {
   $(function() {
-    var chat, createMazeObjectHandler, createMazeObjectHandlers, maze, mazeObjectSizeHeight, mazeObjectSizeWidth, mazeToJSON;
+    var changeObject, chat, createMaze, createMazeObjectHandler, createMazeObjectHandlers, maze, mazeObjectSizeHeight, mazeObjectSizeWidth, mazeToJson, readMap;
     chat = $.connection.asyncRobotHub;
     $.connection.hub.start().done(function() {
       return console.log("hub carregado de tiro porrada e bomba");
@@ -39,9 +39,20 @@
       html += "</div>";
       return $("#maze").append(html);
     };
+    $("#btnMazeMount").click(function() {
+      return createMaze();
+    });
     $("#btnMazeImport").click(function() {
-      var json, landObject, _i, _len, _results;
-      json = JSON.parse($("#txtMazeJson").val());
+      return createMaze(readMap("simple"));
+    });
+    readMap = function(mapName) {
+      $.get("/Content/maze/" + mapName + ".html", function(data) {
+        return createMaze(JSON.parse(data));
+      });
+      return void 0;
+    };
+    changeObject = (function() {
+      var landObject, _i, _len, _results;
       _results = [];
       for (_i = 0, _len = json.length; _i < _len; _i++) {
         landObject = json[_i];
@@ -55,33 +66,53 @@
       }
       return _results;
     });
-    $("#btnMazeMount").click(function() {
-      var coordinate, mazeObjectCount, num, objectX, objectY, objectsPerLine, txtMazeHeight, txtMazeWidth, _i;
-      maze.empty();
-      txtMazeHeight = $("#txtMazeHeight").val();
-      txtMazeWidth = $("#txtMazeWidth").val();
-      objectsPerLine = parseInt(txtMazeWidth) - 1;
-      objectY = 0;
+    createMaze = function(jsonMaze) {
+      var coordinate, html, lastY, mazeHeight, mazeObjectCount, mazeObjectPerLine, mazeTrack, mazeWidth, num, objectX, objectY, trackItem, _i, _ref;
+      $("#maze").empty();
+      if (jsonMaze !== void 0) {
+        mazeWidth = jsonMaze.width;
+        mazeHeight = jsonMaze.height;
+        mazeTrack = jsonMaze.track;
+      } else {
+        mazeWidth = $("#txtMazeWidth").val();
+        mazeHeight = $("#txtMazeHeight").val();
+        mazeTrack = null;
+      }
+      mazeObjectPerLine = parseInt(mazeWidth) - 1;
+      mazeObjectCount = mazeWidth * mazeHeight;
+      trackItem = 0;
       objectX = 0;
-      mazeObjectCount = parseInt(txtMazeHeight) * parseInt(txtMazeWidth);
-      maze.css('width', (parseInt(txtMazeWidth) * mazeObjectSizeWidth) + "px");
-      maze.css('height', (parseInt(txtMazeHeight) * mazeObjectSizeHeight) + "px");
-      for (num = _i = 0; 0 <= mazeObjectCount ? _i <= mazeObjectCount : _i >= mazeObjectCount; num = 0 <= mazeObjectCount ? ++_i : --_i) {
+      objectY = 0;
+      lastY = 0;
+      html = "<div class='line'>";
+      for (num = _i = 0, _ref = mazeObjectCount - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; num = 0 <= _ref ? ++_i : --_i) {
+        if (objectY !== lastY) {
+          lastY = objectY;
+          if (lastY > 0) {
+            html += "</div>";
+          }
+          html += "<div class='line'>";
+        }
         coordinate = objectX + "-" + objectY;
-        maze.append("<div class='mazeObject wall' data-coordinate='" + coordinate + "'></div>");
-        if (objectX === objectsPerLine) {
+        if (mazeTrack !== null && mazeTrack[trackItem].x === objectX && mazeTrack[trackItem].y === objectY) {
+          html += "<div class='mazeObject space' data-coordinate='" + coordinate + "'></div>";
+          if (mazeTrack.length > trackItem + 1) {
+            trackItem++;
+          }
+        } else {
+          html += "<div class='mazeObject wall' data-coordinate='" + coordinate + "'></div>";
+        }
+        if (objectX === mazeObjectPerLine) {
           objectX = 0;
           objectY++;
         } else {
           objectX++;
         }
       }
-      return createMazeObjectHandlers();
-    });
-    $("#btnMazeExport").click(function() {
-      return mazeToJSON();
-    });
-    mazeToJSON = function() {
+      html += "</div>";
+      return $("#maze").append(html);
+    };
+    mazeToJson = function() {
       var a, objectX, objectY, objectsPerLine, returnJSON, txtMazeHeight, txtMazeWidth;
       maze = $("#maze");
       txtMazeHeight = $("#txtMazeHeight").val();
@@ -89,15 +120,16 @@
       objectsPerLine = parseInt(txtMazeWidth) - 1;
       objectY = 0;
       objectX = 0;
-      returnJSON = "[";
+      returnJSON = '{';
+      returnJSON += '    "width":' + txtMazeWidth;
+      returnJSON += '    ,"height":' + txtMazeHeight;
+      returnJSON += '    ,"track": [';
       $.each($(".mazeObject"), function() {
         var objectValue;
-        if ($(this).hasClass("wall")) {
-          objectValue = "wall";
-        } else if ($(this).hasClass("space")) {
+        if ($(this).hasClass("space")) {
           objectValue = "space";
+          returnJSON += '{"x": ' + objectX + ', "y": ' + objectY + ' },';
         }
-        returnJSON += '{"x": ' + objectX + ', "y": ' + objectY + ', "value": "' + objectValue + '" },';
         if (objectX === objectsPerLine) {
           objectX = 0;
           return objectY++;
@@ -107,7 +139,8 @@
       });
       a = returnJSON.length;
       returnJSON = returnJSON.substring(0, a - 1);
-      returnJSON += "]";
+      returnJSON += "    ]";
+      returnJSON += "}";
       return $("#txtMazeJson").val(returnJSON);
     };
     createMazeObjectHandlers = function() {

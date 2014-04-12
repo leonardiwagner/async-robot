@@ -40,8 +40,27 @@
         html += "</div>"
         $("#maze").append(html)
     
+    
+    
+
+    
+    
+    $("#btnMazeMount").click(() ->
+        createMaze()
+    );
+
     $("#btnMazeImport").click(() ->
-        json = JSON.parse($("#txtMazeJson").val())
+        createMaze(readMap("simple"))
+    );
+
+    
+    readMap = (mapName) ->
+        $.get("/Content/maze/" + mapName + ".html", (data) ->
+          createMaze(JSON.parse(data));
+        );
+        undefined
+
+    changeObject = (() ->
         for landObject in json
             if landObject.value is "space"
                 $(".mazeObject[data-coordinate='" + landObject.x + "-" + landObject.y  + "']").removeClass("wall")
@@ -50,43 +69,53 @@
                 $(".mazeObject[data-coordinate='" + landObject.x + "-" + landObject.y  + "']").removeClass("space")
                 $(".mazeObject[data-coordinate='" + landObject.x + "-" + landObject.y  + "']").addClass("wall")
     );
-    
 
-    $("#btnMazeMount").click(
-        () ->
-            maze.empty()
-            txtMazeHeight = $("#txtMazeHeight").val()
-            txtMazeWidth = $("#txtMazeWidth").val()
+    createMaze = (jsonMaze) ->
+        $("#maze").empty()
 
-            objectsPerLine = parseInt(txtMazeWidth) - 1
+        if jsonMaze isnt undefined
+            mazeWidth = jsonMaze.width
+            mazeHeight = jsonMaze.height
+            mazeTrack = jsonMaze.track
+        else        
+            mazeWidth = $("#txtMazeWidth").val()
+            mazeHeight = $("#txtMazeHeight").val()
+            mazeTrack = null
+
+        mazeObjectPerLine = parseInt(mazeWidth) - 1
+        mazeObjectCount = mazeWidth * mazeHeight
+
+        trackItem = 0
+        objectX = 0
+        objectY = 0
+        lastY = 0
+
+        html = "<div class='line'>"
+        for num in [0..mazeObjectCount - 1]
+            if objectY isnt lastY
+                lastY = objectY
+                if lastY > 0
+                    html += "</div>"
+                html += "<div class='line'>"
             
-            objectY = 0
-            objectX = 0
-            
-            mazeObjectCount = parseInt(txtMazeHeight) * parseInt(txtMazeWidth)
-            maze.css('width', (parseInt(txtMazeWidth) * mazeObjectSizeWidth) + "px")
-            maze.css('height', (parseInt(txtMazeHeight) * mazeObjectSizeHeight)  + "px")
-            for num in [0..mazeObjectCount]
-                coordinate = objectX + "-" + objectY
-                maze.append("<div class='mazeObject wall' data-coordinate='#{coordinate}'></div>")
+            coordinate = objectX + "-" + objectY
+            if mazeTrack isnt null and mazeTrack[trackItem].x is objectX and mazeTrack[trackItem].y is objectY
+                html += "<div class='mazeObject space' data-coordinate='#{coordinate}'></div>"
+                if mazeTrack.length > trackItem + 1
+                    trackItem++
+            else
+                html += "<div class='mazeObject wall' data-coordinate='#{coordinate}'></div>"
                 
-                if objectX == objectsPerLine
-                    objectX = 0
-                    objectY++
-                else            
-                    objectX++
-                
-            createMazeObjectHandlers()
-    );
+            if objectX == mazeObjectPerLine
+                objectX = 0
+                objectY++
+            else            
+                objectX++
+
+        html += "</div>"
+        $("#maze").append(html)
     
-    $("#btnMazeExport").click(() ->
-        mazeToJSON()
-    );
-
-    
-
-
-    mazeToJSON = () ->
+    mazeToJson = () ->
         maze = $("#maze")
         txtMazeHeight = $("#txtMazeHeight").val()
         txtMazeWidth = $("#txtMazeWidth").val()
@@ -95,15 +124,17 @@
         
         objectY = 0
         objectX = 0
-        returnJSON = "["
+
+        returnJSON = '{'
+        returnJSON += '    "width":' + txtMazeWidth
+        returnJSON += '    ,"height":' + txtMazeHeight
+        returnJSON += '    ,"track": ['
+
 
         $.each($(".mazeObject"), () ->
-            if $(this).hasClass("wall")
-                objectValue = "wall"
-            else if $(this).hasClass("space")
+            if $(this).hasClass("space")
                 objectValue = "space"
-            
-            returnJSON += '{"x": ' + objectX + ', "y": ' + objectY + ', "value": "' + objectValue + '" },'
+                returnJSON += '{"x": ' + objectX + ', "y": ' + objectY + ' },'
             
             if objectX == objectsPerLine
                 objectX = 0
@@ -113,7 +144,9 @@
         );
         a =returnJSON.length
         returnJSON = returnJSON.substring(0, a - 1)
-        returnJSON += "]"
+        
+        returnJSON += "    ]"
+        returnJSON += "}"
 
         $("#txtMazeJson").val(returnJSON)
 

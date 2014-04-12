@@ -5,21 +5,20 @@
 
 <h2>Index</h2>
 
-
-<fieldset>
-    <legend>Maze size</legend>
-    <label>Width</label>
-    <input type="number" id="txtMazeHeight" value="10"/>
-    <label>Width</label>
-    <input type="number" id="txtMazeWidth" value="5"/>
-    <button id="btnMazeMount">Mount!</button>
-</fieldset>
+<form class="form-horizontal">
+    <legend>Create new maze</legend>
+    <div class="controls controls-row">
+        <label class="control-label" for="txtMazeWidth" class="input-small">Width</label>
+        <label class="control-label" for="txtMazeHeight" class="input-small">Height</label>
+    </div>
+    <div class="controls controls-row">
+        <input type="number" id="txtMazeWidth" value="5" placeholder="maze width" class="input-small" />
+        <input type="number" id="txtMazeHeight" value="10" placeholder="maze height" class="input-small" />
+        <button type="button" id="btnMazeMount" class="btn btn-primary">Create maze</button>
+    </div>
+    <button type="button" id="btnMazeImport" class="btn btn-primary">Import maze</button>
+</form>
 
 <section id="maze"></section>
-
-<button id="btnMazeExport">Export!</button>
-<button id="btnMazeImport">Import!</button>
-
-<button id="btnTask">Task!</button>
 
 <textarea id="txtMazeJson"></textarea>
