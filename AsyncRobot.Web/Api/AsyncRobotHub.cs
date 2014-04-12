@@ -1,19 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Script.Serialization;
+using System.Web.WebPages.Instrumentation;
 using AsyncRobot.Core;
 using Microsoft.AspNet.SignalR;
-
+using Newtonsoft.Json;
 using Owin;
 using Microsoft.Owin;
 
 [assembly: OwinStartup(typeof(AsyncRobot.Web.Api.AsyncRobotHub))]
 namespace AsyncRobot.Web.Api
 {
+    public class LandJson
+    {
+        public int width { get; set; }
+        public int height { get; set; }
+        public List<Position> track { get; set; }
+    }
+
+    public class Position
+    {
+        public int id { get; set; }
+        public int x { get; set; }
+        public int y { get; set; }
+    }
+
     public class AsyncRobotHub : Hub
     {
         private Core.Land Land;
@@ -30,54 +47,32 @@ namespace AsyncRobot.Web.Api
             Clients.All.hello();
         }
 
-
-
-        public async Task RunRobots(int robotCount)
+        public void RunRobot(string landJson, string robotJson)
         {
-            var land = new Core.Land();
-            var robotList = new List<Core.Robot>();
-            for (int i = 0; i < robotCount; i++)
+            var landClient = JsonConvert.DeserializeObject<LandJson>(landJson);
+            var robotClient = JsonConvert.DeserializeObject<List<Position>>(robotJson);
+
+            Core.Land land = new Land(landClient.width, landClient.height);
+            foreach(var landPoint in landClient.track)
+                land.AddTrackPoint(landPoint.x, landPoint.y);
+            
+            List<Core.Robot> robotList = new List<Robot>();
+            foreach (var robot in robotClient)
             {
-                var robot = new Robot(land, i);
-                robot.Moved += robot_Moved;
-                robotList.Add(robot);
-                
+                var r = new Robot(land, robot.id, robot.x, robot.y);
+                r.Moved += r_Moved;
+                r.ExploreLand();
             }
 
-            foreach(var robot in robotList)
-                robot.MoveX();
         }
 
-        void robot_Moved(object sender, MyEventArgs e)
+        void r_Moved(object sender, MyEventArgs e)
         {
-            Clients.All.printTask(e.Log);
+            Clients.All.setRobot(e.Id,e.X, e.Y);
         }
+
        
+  
 
-        public void TaskMock()
-        {
-            for(int i =0;i<10;i++)
-            { 
-                Thread.Sleep(2000);
-                PrintTask("ae " + i);
-            }
-        }
-
-        public void PrintTask(string taskString)
-        {
-            Clients.All.printTask(taskString);
-        }
-
-        public void RequestMazeCreation()
-        {
-            var land = new Core.Land();
-            this.Land = land;
-            var serializer = new JavaScriptSerializer();
-
-            var MazePositions = land.Read();
-            var maze = serializer.Serialize(land.Read());
-
-            Clients.All.mountMaze(maze.ToString());
-        }
     }
 }

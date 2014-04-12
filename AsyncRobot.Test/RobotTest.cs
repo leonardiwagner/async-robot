@@ -13,8 +13,8 @@ namespace AsyncRobot.Test
         [SetUp]
         public void Init()
         {
-            land = new Land();
-            robot = new Robot(land,0);
+            land = new Land(30,30);
+            robot = new Robot(land,0,0,0);
         }
         
         [Test]

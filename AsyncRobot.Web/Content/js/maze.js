@@ -1,7 +1,8 @@
 (function() {
   $(function() {
-    var changeObject, chat, createMaze, createMazeObjectHandler, createMazeObjectHandlers, maze, mazeObjectSizeHeight, mazeObjectSizeWidth, mazeToJson, readMap;
+    var changeObject, chat, createMaze, createMazeObjectHandler, createMazeObjectHandlers, maze, mazeObjectSize, mazeObjectSizeHeight, mazeObjectSizeWidth, mazeToJson, readMap, robotToJson, setRobotPosition, startRobot, startRobots;
     chat = $.connection.asyncRobotHub;
+    mazeObjectSize = 10;
     $.connection.hub.start().done(function() {
       return console.log("hub carregado de tiro porrada e bomba");
     });
@@ -11,6 +12,43 @@
     chat.client.setRobotPosition = function(x, y, robotId) {
       $("#maze").removeClass("robot-" + robotId);
       return $("#maze maze-item-" + x + "-" + y).addClass("robot-" + robotId);
+    };
+    $("#btnRun").click(function() {
+      return startRobots();
+    });
+    startRobots = function() {
+      var maze, robots;
+      startRobot();
+      maze = mazeToJson();
+      robots = robotToJson();
+      return chat.server.runRobot(maze, robots);
+    };
+    startRobot = function() {
+      var coordinate, html, num, randomSpace, robotCount, robotX, robotY, trackCount, tracks, _i, _ref, _results;
+      robotCount = 6;
+      tracks = JSON.parse(mazeToJson()).track;
+      trackCount = tracks.length;
+      _results = [];
+      for (num = _i = 0, _ref = robotCount - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; num = 0 <= _ref ? ++_i : --_i) {
+        randomSpace = Math.floor(Math.random() * trackCount);
+        robotX = tracks[randomSpace].x;
+        robotY = tracks[randomSpace].y;
+        coordinate = robotX + "-" + robotY;
+        html = "<div class='mazeObject robot' data-x='" + robotX + "'  data-y='" + robotY + "' data-id='" + num + "'></div>";
+        $("#maze").append(html);
+        _results.push(setRobotPosition(num, robotX, robotY));
+      }
+      return _results;
+    };
+    chat.client.setRobot = function(id, x, y) {
+      setRobotPosition(id, x, y);
+      return console.log("robot " + id + " " + x + " " + y);
+    };
+    setRobotPosition = function(robotId, x, y) {
+      var objectX, objectY;
+      objectX = x * mazeObjectSize;
+      objectY = y * mazeObjectSize;
+      return $(".robot[data-id=" + robotId + "]").css('left', objectX + "px").css('top', objectY + "px");
     };
     mazeObjectSizeWidth = 10;
     mazeObjectSizeHeight = 10;
@@ -57,22 +95,24 @@
       for (_i = 0, _len = json.length; _i < _len; _i++) {
         landObject = json[_i];
         if (landObject.value === "space") {
-          $(".mazeObject[data-coordinate='" + landObject.x + "-" + landObject.y + "']").removeClass("wall");
-          _results.push($(".mazeObject[data-coordinate='" + landObject.x + "-" + landObject.y + "']").addClass("space"));
+          $(".mazeObject[data-x='" + landObject.x + "-" + landObject.y + "']").removeClass("wall");
+          _results.push($(".mazeObject[data-x='" + landObject.x + "-" + landObject.y + "']").addClass("space"));
         } else {
-          $(".mazeObject[data-coordinate='" + landObject.x + "-" + landObject.y + "']").removeClass("space");
-          _results.push($(".mazeObject[data-coordinate='" + landObject.x + "-" + landObject.y + "']").addClass("wall"));
+          $(".mazeObject[data-x='" + landObject.x + "-" + landObject.y + "']").removeClass("space");
+          _results.push($(".mazeObject[data-x='" + landObject.x + "-" + landObject.y + "']").addClass("wall"));
         }
       }
       return _results;
     });
     createMaze = function(jsonMaze) {
-      var coordinate, html, lastY, mazeHeight, mazeObjectCount, mazeObjectPerLine, mazeTrack, mazeWidth, num, objectX, objectY, trackItem, _i, _ref;
+      var html, lastY, mazeHeight, mazeObjectCount, mazeObjectPerLine, mazeTrack, mazeWidth, num, objectX, objectY, trackItem, _i, _ref;
       $("#maze").empty();
       if (jsonMaze !== void 0) {
         mazeWidth = jsonMaze.width;
         mazeHeight = jsonMaze.height;
         mazeTrack = jsonMaze.track;
+        $("#txtMazeWidth").val(mazeWidth);
+        $("#txtMazeHeight").val(mazeHeight);
       } else {
         mazeWidth = $("#txtMazeWidth").val();
         mazeHeight = $("#txtMazeHeight").val();
@@ -93,14 +133,13 @@
           }
           html += "<div class='line'>";
         }
-        coordinate = objectX + "-" + objectY;
         if (mazeTrack !== null && mazeTrack[trackItem].x === objectX && mazeTrack[trackItem].y === objectY) {
-          html += "<div class='mazeObject space' data-coordinate='" + coordinate + "'></div>";
+          html += "<div class='mazeObject space' data-x='" + objectX + "' data-y='" + objectY + "'></div>";
           if (mazeTrack.length > trackItem + 1) {
             trackItem++;
           }
         } else {
-          html += "<div class='mazeObject wall' data-coordinate='" + coordinate + "'></div>";
+          html += "<div class='mazeObject wall' data-x='" + objectX + "' data-y='" + objectY + "'></div>";
         }
         if (objectX === mazeObjectPerLine) {
           objectX = 0;
@@ -111,6 +150,21 @@
       }
       html += "</div>";
       return $("#maze").append(html);
+    };
+    robotToJson = function() {
+      var a, returnJSON;
+      returnJSON = "[";
+      $.each($(".robot"), function() {
+        var id, x, y;
+        id = $(this).attr("data-id");
+        x = $(this).attr("data-x");
+        y = $(this).attr("data-y");
+        return returnJSON += '{"id":' + id + ', "x": ' + x + ', "y": ' + y + ' },';
+      });
+      a = returnJSON.length;
+      returnJSON = returnJSON.substring(0, a - 1);
+      returnJSON += "]";
+      return returnJSON;
     };
     mazeToJson = function() {
       var a, objectX, objectY, objectsPerLine, returnJSON, txtMazeHeight, txtMazeWidth;
@@ -141,7 +195,7 @@
       returnJSON = returnJSON.substring(0, a - 1);
       returnJSON += "    ]";
       returnJSON += "}";
-      return $("#txtMazeJson").val(returnJSON);
+      return returnJSON;
     };
     createMazeObjectHandlers = function() {
       return $(".mazeObject").click(function() {
@@ -157,13 +211,17 @@
         return $(obj).addClass('wall');
       }
     };
+    $("#btnMazeExport").click(function() {
+      return $("#txtMazeJson").val(mazeToJson());
+    });
     $("#addRobot").click(function() {
       chat.server.addRobot();
       return console.log("adicionando robo");
     });
-    return $("#btnTask").click(function() {
+    $("#btnTask").click(function() {
       return chat.server.runRobots(10);
     });
+    return createMaze(readMap("simple"));
   });
 
 }).call(this);
