@@ -41,7 +41,7 @@ namespace AsyncRobot.Web.WebSocket
             app.MapSignalR();
         }
 
-        public void RunRobot(string landJson, string robotJson)
+        public async Task RunRobotAsync(string landJson, string robotJson)
         {
             var landClient = JsonConvert.DeserializeObject<LandJson>(landJson);
             var robotClient = JsonConvert.DeserializeObject<List<Position>>(robotJson);
@@ -56,19 +56,19 @@ namespace AsyncRobot.Web.WebSocket
                 var r = new Robot(land, robot.id, robot.x, robot.y);
                 r.Moved +=r_Moved;
                 r.Reached += r_Reached;
-                r.ExploreLandAsync();
+                await r.ExploreLandAsync();
             }
 
         }
 
         void r_Reached(object sender, RobotMoveArgs e)
         {
-            Clients.All.setRobot(e.RobotId, e.X, e.Y);
+            Clients.All.setRobotReached(e.RobotId, e.X, e.Y);
         }
 
         void r_Moved(object sender, RobotMoveArgs e)
         {
-            Clients.All.setRobot(e.RobotId,e.X, e.Y);
+            Clients.All.setRobotPosition(e.RobotId, e.X, e.Y);
         }
 
        

@@ -14,6 +14,8 @@
 
         public static implicit operator char(LandObject obj)
         {
+            if (obj == null)
+                return default(char);
             return obj.Name;
         }
     }

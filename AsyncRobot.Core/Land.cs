@@ -40,7 +40,7 @@ namespace AsyncRobot.Core
         /// <param name="landObject"></param>
         public void SetPosition(int x, int y, LandObject landObject)
         {
-            var point = Map.Where(horizontal => horizontal.X == x).Where(vertical => vertical.X == y).First();
+            var point = Map.Where(horizontal => horizontal.X == x).Where(vertical => vertical.Y == y).First();
             point.SetValue(landObject);
         }
 

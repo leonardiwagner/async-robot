@@ -44,8 +44,10 @@ namespace AsyncRobot.Core
         /// </summary>
         /// <param name="direction"></param>
         /// <returns></returns>
-        private LandPosition SeeLand(char direction)
+        private async Task<LandPosition> SeeLandAsync(char direction)
         {
+            await Task.Yield();
+
             int seeX = CurrentPosition.X;
             int seeY = CurrentPosition.Y;
             
@@ -60,20 +62,22 @@ namespace AsyncRobot.Core
         /// <summary>
         /// Make a movement in the land
         /// </summary>
-        public void Move()
+        public async Task Move()
         {
+            await Task.Yield();
+
             //Look where it can goes in the land
             List<char> avaiableMoves = new List<char>();
             foreach (char direction in Compass)
             {
-                char seeLand = SeeLand(direction).Value;
+                LandPosition seeLand = await SeeLandAsync(direction);
 
-                if (seeLand == default(char))
+                if (seeLand.Value == default(char))
                 {
                     HasReachedExit = true;
                     Reached(this, new RobotMoveArgs(this.Id, this.CurrentPosition.X, this.CurrentPosition.Y));
                 }
-                else if (seeLand == ' ')
+                else if (seeLand.Value == ' ')
                 {
                     avaiableMoves.Add(direction);
                 }
@@ -83,7 +87,7 @@ namespace AsyncRobot.Core
             char moveTo = ' ';
             for (int i = 0; i < avaiableMoves.Count(); i++)
             {
-                var seeLand = SeeLand(avaiableMoves[i]);
+                var seeLand = await SeeLandAsync(avaiableMoves[i]);
                 List<LandPosition> wasThereBefore = this.Breadcrumb
                     .Where(horizontal => horizontal.X == seeLand.X)
                     .Where(vertical => vertical.Y == seeLand.Y).ToList();
