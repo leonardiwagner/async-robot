@@ -68,6 +68,9 @@ namespace AsyncRobot.Core
 
             //Look where it can goes in the land
             List<char> avaiableMoves = new List<char>();
+
+            int minShouldGoCount = 0;
+            char shouldGo = ' ';
             foreach (char direction in Compass)
             {
                 LandPosition seeLand = await SeeLandAsync(direction);
@@ -81,8 +84,21 @@ namespace AsyncRobot.Core
                 {
                     avaiableMoves.Add(direction);
                 }
+
+                var wasThereBeforeCountList = this.Breadcrumb
+                    .Where(horizontal => horizontal.X == seeLand.X)
+                    .Where(vertical => vertical.Y == seeLand.Y).ToList().Count();
+
+                if (minShouldGoCount == 0 || wasThereBeforeCountList < minShouldGoCount)
+                {
+                    minShouldGoCount = wasThereBeforeCountList;
+                    shouldGo = seeLand.Value;
+                }
             }
 
+            char moveTo = shouldGo;
+
+            /*
             //Choose the best position to go
             char moveTo = ' ';
             for (int i = 0; i < avaiableMoves.Count(); i++)
@@ -104,6 +120,7 @@ namespace AsyncRobot.Core
                     break;
                 }
             }
+            */
 
             //Set move to chosen position
             int moveX = CurrentPosition.X;

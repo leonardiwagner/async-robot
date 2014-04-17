@@ -250,7 +250,7 @@
 
     })();
     Maze = (function() {
-      var changeObject, createMaze, createMazeObjectHandler, createMazeObjectHandlers, hub, maze, mazeObjectSize, mazeToJson, robotToJson;
+      var changeObject, createMaze, createMazeObjectHandler, createMazeObjectHandlers, hub, maze, mazeObjectSize, robotToJson;
 
       function Maze() {}
 
@@ -305,10 +305,11 @@
           }
         }
         html += "</div>";
-        return maze.append(html);
+        maze.append(html);
+        return createMazeObjectHandlers();
       };
 
-      mazeToJson = function() {
+      Maze.prototype.mazeToJson = function() {
         var a, objectX, objectY, objectsPerLine, returnJSON, txtMazeHeight, txtMazeWidth;
         txtMazeHeight = $("#txtMazeHeight").val();
         txtMazeWidth = $("#txtMazeWidth").val();
@@ -364,7 +365,7 @@
 
       Maze.prototype.setRobotInMaze = function(robotCount) {
         var coordinate, html, num, randomSpace, robotX, robotY, trackCount, tracks, _i, _ref, _results;
-        tracks = JSON.parse(mazeToJson()).track;
+        tracks = JSON.parse(this.mazeToJson()).track;
         trackCount = tracks.length;
         _results = [];
         for (num = _i = 0, _ref = robotCount - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; num = 0 <= _ref ? ++_i : --_i) {
@@ -404,7 +405,7 @@
 
       Maze.prototype.startExplore = function() {
         var robots;
-        maze = mazeToJson();
+        maze = this.mazeToJson();
         robots = robotToJson();
         return hub.startExplore(maze, robots);
       };
@@ -430,6 +431,7 @@
     })();
     maze = new Maze;
     maze.loadMap("simple");
+    maze.mazeToJson();
     $("#btnMazeSetRobot").click(function() {
       return maze.setRobotInMaze($("#txtMazeRobotCount").val());
     });
@@ -439,7 +441,9 @@
     $("#btnMazeCreate").click(function() {});
     $("#btnMazeStop").click(function() {});
     $("#btnMazeImport").click(function() {});
-    return $("#btnMazeExport").click(function() {});
+    return $("#btnMazeExport").click(function() {
+      return $("#txtMazeJson").val(maze.mazeToJson());
+    });
   });
 
 }).call(this);

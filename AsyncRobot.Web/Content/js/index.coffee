@@ -73,8 +73,9 @@
 
             html += "</div>"
             maze.append(html)
+            createMazeObjectHandlers()
 
-        mazeToJson = () ->
+        mazeToJson : () ->
             txtMazeHeight = $("#txtMazeHeight").val()
             txtMazeWidth = $("#txtMazeWidth").val()
 
@@ -129,7 +130,7 @@
             undefined
 
         setRobotInMaze : (robotCount) ->
-            tracks = JSON.parse(mazeToJson()).track
+            tracks = JSON.parse(this.mazeToJson()).track
             trackCount = tracks.length
 
             for num in [0..robotCount - 1]
@@ -157,7 +158,7 @@
             $(".robot[data-id=#{robotId}]").css('left',objectX + "px").css('top',objectY + "px")
 
         startExplore : () ->
-            maze = mazeToJson()
+            maze = this.mazeToJson()
             robots = robotToJson()
             hub.startExplore(maze, robots)
 
@@ -182,6 +183,7 @@
     maze = new Maze
 
     maze.loadMap("simple")
+    maze.mazeToJson()
 
     $("#btnMazeSetRobot").click(() ->
         maze.setRobotInMaze($("#txtMazeRobotCount").val())
@@ -204,5 +206,5 @@
     );
 
     $("#btnMazeExport").click(() ->
-    
+        $("#txtMazeJson").val(maze.mazeToJson());
     );
