@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AsyncRobot.Core
@@ -66,10 +67,7 @@ namespace AsyncRobot.Core
         {
             await Task.Yield();
 
-            //Look where it can goes in the land
-            List<char> avaiableMoves = new List<char>();
-
-            int minShouldGoCount = 0;
+            int lastThereBefore = -1;
             char shouldGo = ' ';
             foreach (char direction in Compass)
             {
@@ -82,45 +80,20 @@ namespace AsyncRobot.Core
                 }
                 else if (seeLand.Value == ' ')
                 {
-                    avaiableMoves.Add(direction);
-                }
+                    var wasThereBeforeCount = this.Breadcrumb
+                     .Where(horizontal => horizontal.X == seeLand.X)
+                     .Where(vertical => vertical.Y == seeLand.Y).ToList().Count();
 
-                var wasThereBeforeCountList = this.Breadcrumb
-                    .Where(horizontal => horizontal.X == seeLand.X)
-                    .Where(vertical => vertical.Y == seeLand.Y).ToList().Count();
-
-                if (minShouldGoCount == 0 || wasThereBeforeCountList < minShouldGoCount)
-                {
-                    minShouldGoCount = wasThereBeforeCountList;
-                    shouldGo = seeLand.Value;
+                    if (lastThereBefore == -1 || wasThereBeforeCount < lastThereBefore)
+                    {
+                        lastThereBefore = wasThereBeforeCount;
+                        shouldGo = direction;
+                    }
                 }
             }
 
             char moveTo = shouldGo;
 
-            /*
-            //Choose the best position to go
-            char moveTo = ' ';
-            for (int i = 0; i < avaiableMoves.Count(); i++)
-            {
-                var seeLand = await SeeLandAsync(avaiableMoves[i]);
-                List<LandPosition> wasThereBefore = this.Breadcrumb
-                    .Where(horizontal => horizontal.X == seeLand.X)
-                    .Where(vertical => vertical.Y == seeLand.Y).ToList();
-
-                if (wasThereBefore.Count == 0)
-                {
-                    moveTo = avaiableMoves[i];
-                    break;
-                }
-
-                if (i == avaiableMoves.Count() - 1)
-                {
-                    moveTo = avaiableMoves[i];
-                    break;
-                }
-            }
-            */
 
             //Set move to chosen position
             int moveX = CurrentPosition.X;

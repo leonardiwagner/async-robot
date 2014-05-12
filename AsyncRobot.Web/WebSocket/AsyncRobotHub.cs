@@ -56,7 +56,7 @@ namespace AsyncRobot.Web.WebSocket
                 var r = new Robot(land, robot.id, robot.x, robot.y);
                 r.Moved +=r_Moved;
                 r.Reached += r_Reached;
-                await r.ExploreLandAsync();
+                r.ExploreLandAsync();
             }
 
         }

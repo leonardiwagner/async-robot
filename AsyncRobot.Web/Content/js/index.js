@@ -143,6 +143,14 @@
         return void 0;
       };
 
+      Maze.prototype.randomDivColor = function() {
+        var b, g, r;
+        r = Math.floor(Math.random() * 255) - 10;
+        g = Math.floor(Math.random() * 255) - 10;
+        b = Math.floor(Math.random() * 255) - 10;
+        return "background-color:rgba(" + r + "," + g + "," + b + ",0.7); outline: 1px rgb(" + (r + 10) + "," + (g + 10) + "," + (b + 10) + ") solid;";
+      };
+
       Maze.prototype.setRobotInMaze = function(robotCount) {
         var coordinate, html, num, randomSpace, robotX, robotY, trackCount, tracks, _i, _ref, _results;
         tracks = JSON.parse(this.mazeToJson()).track;
@@ -153,7 +161,7 @@
           robotX = tracks[randomSpace].x;
           robotY = tracks[randomSpace].y;
           coordinate = robotX + "-" + robotY;
-          html = "<div class='mazeObject robot' data-x='" + robotX + "'  data-y='" + robotY + "' data-id='" + num + "'></div>";
+          html = ("<div class='mazeObject robot' data-x='" + robotX + "'  data-y='" + robotY + "' data-id='" + num + "' style='") + this.randomDivColor() + "'></div>";
           $("#maze").append(html);
           _results.push(this.setRobotPosition(num, robotX, robotY));
         }

@@ -129,6 +129,13 @@
             );
             undefined
 
+        randomDivColor: () ->
+            r = Math.floor(Math.random() * 255) - 10
+            g = Math.floor(Math.random() * 255) - 10
+            b = Math.floor(Math.random() * 255) - 10
+
+            return "background-color:rgba(" + r + "," + g + "," + b + ",0.7); outline: 1px rgb(" + (r + 10) + "," + (g + 10) + "," + (b + 10) + ") solid;"
+
         setRobotInMaze : (robotCount) ->
             tracks = JSON.parse(this.mazeToJson()).track
             trackCount = tracks.length
@@ -138,7 +145,7 @@
                 robotX = tracks[randomSpace].x
                 robotY = tracks[randomSpace].y
                 coordinate = robotX + "-" + robotY
-                html = "<div class='mazeObject robot' data-x='#{robotX}'  data-y='#{robotY}' data-id='#{num}'></div>"
+                html = "<div class='mazeObject robot' data-x='#{robotX}'  data-y='#{robotY}' data-id='#{num}' style='" + @randomDivColor() + "'></div>"
                 $("#maze").append(html)
                 @setRobotPosition(num,robotX,robotY)
 
