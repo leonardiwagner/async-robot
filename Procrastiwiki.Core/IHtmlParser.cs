@@ -8,10 +8,10 @@ using Procrastiwiki.Model.Html;
 
 namespace Procrastiwiki.Core
 {
-    public interface IHtmlReader
+    public interface IHtmlParser
     {
-        Tag readTagValue(String tagName);
-        IEnumerable<Tag> readTagsByType(String tagType);
+        Tag ReadTagValue(String tagName);
+        IEnumerable<Tag> ReadTagsByType(String tagType);
 
 
     }

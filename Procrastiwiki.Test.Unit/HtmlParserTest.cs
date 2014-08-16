@@ -10,14 +10,14 @@ using Procrastiwiki.Core;
 namespace Procrastiwiki.Test.Unit
 {
     [TestFixture]
-    public class HtmlReaderTest
+    public class HtmlParserTest
     {
-        public IHtmlReader htmlReader;
+        public IHtmlParser htmlReader;
 
         [SetUp, Test]
         public void LoadHtmlToTest()
         {
-            htmlReader = new HtmlReader(
+            htmlReader = new HtmlParser(
                 new StringBuilder("<html>")
                           .Append("  <head>")
                           .Append("    <title>This is the page title</title>")
@@ -32,26 +32,26 @@ namespace Procrastiwiki.Test.Unit
         }
 
         [Test]
-        public void HtmlReaderShouldReadTagValue()
+        public void HtmlParseShouldReadTagValue()
         {
-            var titleTag = htmlReader.readTagValue("title");
+            var titleTag = htmlReader.ReadTagValue("title");
             
             titleTag.Name.Should().Be("title");
             titleTag.Value.Should().Be("This is the page title");
         }
 
         [Test]
-        public void HtmlReaderShouldReadLinkTags()
+        public void HtmlParseShouldReadLinkTags()
         {
-            var linkTags = htmlReader.readTagsByType("a");
+            var linkTags = htmlReader.ReadTagsByType("a");
             
             linkTags.Count().Should().Be(2);
         }
 
         [Test]
-        public void HtmlReaderShouldReadCorrectLinkTagValues()
+        public void HtmlParseShouldReadCorrectLinkTagValues()
         {
-            var linkTags = htmlReader.readTagsByType("a");
+            var linkTags = htmlReader.ReadTagsByType("a");
             var linkTag = linkTags.Where(x => x.Value == "Test Page Title2").First();
 
             linkTag.GetProperties().Where(x => x.Key == "href").First().Value

@@ -40,8 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HtmlReader.cs" />
-    <Compile Include="IHtmlReader.cs" />
+    <Compile Include="HtmlParser.cs" />
+    <Compile Include="IHtmlParser.cs" />
     <Compile Include="IWikiReader.cs" />
     <Compile Include="WikiReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

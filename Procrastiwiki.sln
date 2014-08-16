@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Procrastiwiki.Model", "Proc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Procrastiwiki.Test.Integration", "Procrastiwiki.Test.Integration\Procrastiwiki.Test.Integration.csproj", "{760E8BE3-4269-4D2D-8CE6-B10019850267}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{21FC0C5E-FFDF-45CA-ABD2-AEDC1BAC68E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{760E8BE3-4269-4D2D-8CE6-B10019850267} = {21FC0C5E-FFDF-45CA-ABD2-AEDC1BAC68E5}
+		{AF929836-CC76-4787-A5B6-60CD1ED51EE6} = {21FC0C5E-FFDF-45CA-ABD2-AEDC1BAC68E5}
 	EndGlobalSection
 EndGlobal
