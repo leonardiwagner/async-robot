@@ -10,13 +10,23 @@ namespace Procrastiwiki.Model.Wiki
     {
         public String Name { get; private set; }
         public String Url { get; private set; }
+        public IEnumerable<KeyValuePair<string, string>> Links { get { return links; } }
+
         private ICollection<Wiki.Page> pagesInsideThisWiki;
+        private ICollection<KeyValuePair<string, string>> links;
+
 
         public Page(String name, String url)
         {
             Name = name;
             Url = url;
             pagesInsideThisWiki = new List<Wiki.Page>();
+            links = new List<KeyValuePair<string, string>>();
+        }
+
+        public void AddLink(string name, string url)
+        {
+            links.Add(new KeyValuePair<string, string>(name, url));
         }
 
         public void AddPageToThisWiki(Wiki.Page page)

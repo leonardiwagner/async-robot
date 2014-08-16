@@ -4,6 +4,6 @@ namespace Procrastiwiki.Core
 {
     public interface IWikiReader
     {
-        Model.Wiki.Page ReadFromUrl(String url);
+        Model.Wiki.Page ReadFromUrl(IHtmlParser htmlParser);
     }
 }

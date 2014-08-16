@@ -10,9 +10,9 @@ namespace Procrastiwiki.Core
 {
     public interface IHtmlParser
     {
+        String Url { get; }
         Tag ReadTagValue(String tagName);
         IEnumerable<Tag> ReadTagsByType(String tagType);
-
-
+        IEnumerable<String> SearchValidLinks();
     }
 }

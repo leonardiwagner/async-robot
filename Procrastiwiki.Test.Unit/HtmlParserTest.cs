@@ -51,7 +51,7 @@ namespace Procrastiwiki.Test.Unit
         [Test]
         public void HtmlParseShouldReadCorrectLinkTagValues()
         {
-            var linkTags = htmlReader.ReadTagsByType("a");
+            var linkTags = htmlReader.ReadTagsByType("a ");
             var linkTag = linkTags.Where(x => x.Value == "Test Page Title2").First();
 
             linkTag.GetProperties().Where(x => x.Key == "href").First().Value

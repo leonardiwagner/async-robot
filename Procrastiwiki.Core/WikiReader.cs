@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Procrastiwiki.Model.Wiki;
@@ -7,17 +8,22 @@ namespace Procrastiwiki.Core
 {
     public class WikiReader : IWikiReader
     {
-        public Model.Wiki.Page ReadFromUrl(string url)
+        public Page ReadFromUrl(IHtmlParser htmlParser)
         {
-            string urlBody;
-            using (var httpClient = new HttpClient())
+            var name = htmlParser.ReadTagValue("title").Value;
+            var links = htmlParser.SearchValidLinks()
+                            .Where(x => x.StartsWith("/wiki/") && !x.Contains(":"))
+                            .Take(10)
+                            .ToList();
+
+            var page = new Page(name, htmlParser.Url);
+
+            foreach (var link in links)
             {
-               // urlBody = httpClient.GetStringAsync(url);
+                page.AddLink("", link);
             }
 
-            return new Page("","");
+            return page;
         }
-
-        
     }
 }
