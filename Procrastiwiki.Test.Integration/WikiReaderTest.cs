@@ -28,22 +28,11 @@ namespace Procrastiwiki.Test.Integration
         [Test]
         public void SearchRelatedWiki()
         {
-            
-            foreach (var link in wikiPage.Links)
-            {
-                var htmlParser = new HtmlParser("http://en.wikipedia.org" + link);
-                var wikiReader = new Core.WikiReader();
-                var wp = wikiReader.ReadFromUrl(htmlParser);
-                foreach (var lk in wp.Links)
-                {
-                    var hm = new HtmlParser("http://en.wikipedia.org" + lk);
-                    var wk = new Core.WikiReader();
-                    var wp2 = wk.ReadFromUrl(hm);
+            var wikiReader = new Core.WikiReader();
+            var htmlParser = new HtmlParser("http://en.wikipedia.org/wiki/Procrastination");
 
-                    Debug.Print(wp2.Name);
-                }
-                Debug.Print(wp.Name);
-            }
+            var result  = wikiReader.SearchRelatedLinks(htmlParser, 2);
+            result.Count.Should().Be(30);
         }
     }
 }
