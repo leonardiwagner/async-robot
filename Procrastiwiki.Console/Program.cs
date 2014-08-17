@@ -13,7 +13,7 @@ namespace Procrastiwiki.Console
             var wikiReader = new Core.WikiReader();
             var htmlParser = new Core.HtmlParser("http://en.wikipedia.org/wiki/Procrastination");
 
-            wikiReader.SearchRelatedLinksT(htmlParser, 2);
+            wikiReader.SearchRelatedLinksT(htmlParser, 5000);
 
             System.Console.Read();
         }

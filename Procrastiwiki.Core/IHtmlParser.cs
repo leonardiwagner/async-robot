@@ -14,5 +14,7 @@ namespace Procrastiwiki.Core
         Tag ReadTagValue(String tagName);
         IEnumerable<Tag> ReadTagsByType(String tagType);
         IEnumerable<String> SearchValidLinks();
+
+        Task<IEnumerable<String>> SearchValidLinksAsync();
     }
 }
