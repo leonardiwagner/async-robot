@@ -1,0 +1,19 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Index</h2>
+
+<input type='number' id='txtMazeRobotCount' value='1' placeholder='robot quantity' class='input-small' />
+
+<button type='button' id='btnMazeRun' class='btn btn-primary' onclick="run();">Run!</button> 
+<button type='button' id='btnMazeRun2' class='btn btn-primary' onclick="runAsync();">Run Async!</button> 
+<button type='button' id='btnMazeRun2' class='btn btn-primary' onclick="runThread(5);">Run by 5 Threads!</button> 
+<button type='button' id='btnMazeRun2' class='btn btn-primary' onclick="runThread(10);">Run by 10 Threads!</button> 
+<button type='button' id='btnMazeRun2' class='btn btn-primary' onclick="runThread(25);">Run by 20 Threads!</button> 
+<button type='button' id='btnMazeRun2' class='btn btn-primary' onclick="runThread(50);">Run by 50 Threads!</button> 
+
+<div id="time">
+    
+</div>
+
+<section id='maze'></section>
