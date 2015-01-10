@@ -14,21 +14,37 @@ namespace AsyncRobot.Core.Runners {
             this.Robots = robots;
         }
 
-        public async Task Run() {
-            foreach (var robot in Robots) {
-                while (!robot.HasReachedExit) {
-                    await this.MoveRobotAsync(robot);
-                }
+        public async Task Run()
+        {
+            await RunRobotsAsync();
+
+            await Task.Run(() => Reached(this, new RobotMoveArgs(0, 0, 0)));
+        }
+
+        public async Task RunRobotsAsync()
+        {
+            var tasks = new List<Task>();
+            
+            foreach (var robotR in Robots)
+            {
+                var robot = robotR;
+
+                tasks.Add(new Task(() => {
+                    while (!robot.HasReachedExit)
+                    {
+                        robot.Move();
+                        if (robot.CurrentPosition.X == 18 || robot.CurrentPosition.X == 19)
+                        {
+                            Moved(this,
+                                new RobotMoveArgs(robot.Id, robot.CurrentPosition.X, robot.CurrentPosition.Y));
+                        }
+                    }
+                }));
             }
 
-            Reached(this,new RobotMoveArgs(0, 0, 0));
+            tasks.ForEach(x => x.Start());
+            await Task.WhenAll(tasks);
         }
 
-        private async Task MoveRobotAsync(Robot robot) {
-            await Task.Run(() => {
-                robot.Move();
-                Moved(this, new RobotMoveArgs(robot.Id, robot.CurrentPosition.X, robot.CurrentPosition.Y));
-            });
-        }
     }
 }

@@ -16,6 +16,7 @@ namespace AsyncRobot.Core.Runners {
 
         public void Run() {
             foreach (var robot in Robots) {
+
                 while (!robot.HasReachedExit) {
                     this.MoveRobot(robot);
                 }
@@ -24,9 +25,14 @@ namespace AsyncRobot.Core.Runners {
             Reached(this, new RobotMoveArgs(0, 0, 0));
         }
 
+
         private void MoveRobot(Robot robot) {
             robot.Move();
-            Moved(this, new RobotMoveArgs(robot.Id, robot.CurrentPosition.X, robot.CurrentPosition.Y));
+            if (robot.CurrentPosition.X == 18 || robot.CurrentPosition.X == 19)
+            {
+                Moved(this, new RobotMoveArgs(robot.Id, robot.CurrentPosition.X, robot.CurrentPosition.Y));    
+            }
+            
         }
 
     }

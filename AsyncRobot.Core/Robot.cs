@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace AsyncRobot.Core {
         private Land Land;
         public int Id { get; private set; }
         public LandPosition CurrentPosition { get; private set; }
-        public  List<LandPosition> Breadcrumb { get; private set; }
+        public ConcurrentBag<LandPosition> Breadcrumb { get; private set; }
 
         public bool HasReachedExit { get; private set; }
         private char[] Compass;
@@ -23,7 +24,7 @@ namespace AsyncRobot.Core {
             this.Id = id;
             this.Land = land;
             this.CurrentPosition = new LandPosition(startPositionX, startPositionY);
-            this.Breadcrumb = new List<LandPosition> {};
+            this.Breadcrumb = new ConcurrentBag<LandPosition> { };
             AddBreadcrumb();
             
             this.Compass = new char[]{ 'W', 'N', 'E', 'S'};
@@ -34,15 +35,18 @@ namespace AsyncRobot.Core {
 
         public void Move() {
             char directionToMove = this.FindTheBestDirectionToMove();
-
+            if (directionToMove != default(char))
+            {
+                
+            
            
                 if (directionToMove == 'W') this.CurrentPosition.X--;
                 if (directionToMove == 'E') this.CurrentPosition.X++;
                 if (directionToMove == 'N') this.CurrentPosition.Y--;
                 if (directionToMove == 'S') this.CurrentPosition.Y++;
 
-            AddBreadcrumb();
-            
+                AddBreadcrumb();
+            }
 
             /*
             if (this.Moved != null) {
@@ -62,7 +66,8 @@ namespace AsyncRobot.Core {
                 if (whatRobotSeeInThatDirection.PositionType == LandPositionType.OUT_OF_LIMITS)
                 {
                     HasReachedExit = true;
-                    //Reached(this, new RobotMoveArgs(this.Id, this.CurrentPosition.X, this.CurrentPosition.Y));
+                    return default(char);
+                    Reached(this, new RobotMoveArgs(this.Id, this.CurrentPosition.X, this.CurrentPosition.Y));
                 }
                 else if (whatRobotSeeInThatDirection.PositionType == LandPositionType.SPACE)
                 {
@@ -77,10 +82,10 @@ namespace AsyncRobot.Core {
                             shouldGoInThatDirection = direction;
                         }
                     }
+                    
 
                 }
             }
-
             return shouldGoInThatDirection;
         }
 
