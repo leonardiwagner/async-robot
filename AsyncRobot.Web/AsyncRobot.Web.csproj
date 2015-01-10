@@ -128,6 +128,7 @@
     </Compile>
     <Compile Include="Hubs\MazeHub.cs" />
     <Compile Include="Models\Land.cs" />
+    <Compile Include="Models\MazeRunResult.cs" />
     <Compile Include="Models\Position.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

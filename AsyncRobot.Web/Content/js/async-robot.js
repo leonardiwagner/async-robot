@@ -5,9 +5,9 @@ $.connection.hub.start().done(function () {
     console.log("signalr's hub loaded with shoot, punch and bomb");
 });
 
-mazeHub.client.setRobotPosition = function (id, x, y) {
+mazeHub.client.setRobotPosition = function (threadId, id, x, y) {
     setRobotPosition(id, x, y);
-    return console.log("robot " + id + " x:" + x + " y:" + y);
+    return console.log("[" + threadId + "] [" + id + "] x:" + x + " y:" + y);
 };
 
 mazeHub.client.reached = function (time) {
@@ -41,8 +41,9 @@ var start = function() {
     var x = 1;
     var y = 18;
 
-    for (var i = 1; i <= 50; i++) {
-        $("#maze").append("<div class='mazeObject robot' data-x='" + x + "'  data-y='" + y + "' data-id='" + i + "'></div>");
+    for (var i = 1; i <= 64; i++) {
+        var randomColor = "style='background-color: #" + Math.floor(Math.random() * 16777215).toString(16) + ";'";
+        $("#maze").append("<div " + randomColor + " class='mazeObject robot' data-x='" + x + "'  data-y='" + y + "' data-id='" + i + "'></div>");
         setRobotPosition(i, x, y);
     }
 };

@@ -10,7 +10,7 @@ namespace AsyncRobot.Core {
         private Land Land;
         public int Id { get; private set; }
         public LandPosition CurrentPosition { get; private set; }
-        public ConcurrentBag<LandPosition> Breadcrumb { get; private set; }
+        public List<LandPosition> Breadcrumb { get; private set; }
 
         public bool HasReachedExit { get; private set; }
         private char[] Compass;
@@ -24,7 +24,7 @@ namespace AsyncRobot.Core {
             this.Id = id;
             this.Land = land;
             this.CurrentPosition = new LandPosition(startPositionX, startPositionY);
-            this.Breadcrumb = new ConcurrentBag<LandPosition> { };
+            this.Breadcrumb = new List<LandPosition> { };
             AddBreadcrumb();
             
             this.Compass = new char[]{ 'W', 'N', 'E', 'S'};
@@ -67,12 +67,9 @@ namespace AsyncRobot.Core {
                 {
                     HasReachedExit = true;
                     return default(char);
-                    Reached(this, new RobotMoveArgs(this.Id, this.CurrentPosition.X, this.CurrentPosition.Y));
                 }
                 else if (whatRobotSeeInThatDirection.PositionType == LandPositionType.SPACE)
                 {
-
-                    lock (this.Breadcrumb) {
 
 
                         var howManyTimesRobotWasHere = this.Breadcrumb.Count(position => position.X == whatRobotSeeInThatDirection.X && position.Y == whatRobotSeeInThatDirection.Y);
@@ -81,7 +78,7 @@ namespace AsyncRobot.Core {
                             fewerVisitsInAPosition = howManyTimesRobotWasHere;
                             shouldGoInThatDirection = direction;
                         }
-                    }
+
                     
 
                 }
@@ -107,13 +104,6 @@ namespace AsyncRobot.Core {
                 
         }
 
-        public async Task ExploreLandAsync()
-        {
-            do
-            {
-                await Task.Run(() => Move());
-            } while (!HasReachedExit);
-        }
 
     }
 }

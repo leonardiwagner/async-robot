@@ -6,47 +6,49 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace AsyncRobot.Core.Runners {
-    public class ThreadRunner {
-        private IEnumerable<Robot> Robots;
-        private int ThreadCount;
-        public event EventHandler<RobotMoveArgs> Moved;
-        public event EventHandler<RobotMoveArgs> Reached;
+    public class ThreadRunner : AbstractRunner
+    {
+        private readonly int ThreadCount;
 
         public ThreadRunner(IEnumerable<Robot> robots, int threadCount) {
-            this.Robots = robots;
+            base.Robots = robots;
             this.ThreadCount = threadCount;
         }
 
-        public void Run() {
+        public void Run()
+        {
             var threads = new List<Thread>();
-            for (int i = 0; i < this.ThreadCount; i++) {
-                threads.Add(new Thread(() => Run(i * (ThreadCount / 50), (i + 1) == ThreadCount)));
+            var robotsPerThreads = Robots.Count() / ThreadCount;
+            for (int i = 0; i < this.ThreadCount; i++)
+            {
+                var robotsPerThreadsList = Robots.Skip(i * robotsPerThreads).Take(robotsPerThreads).ToList();
+                threads.Add(new Thread(() => Run(robotsPerThreadsList)));
             }
 
             foreach (var thread in threads) {
                 thread.Start();
             }
-        }
 
-        private void Run(int skip, bool isLastThread) {
-            foreach (var robot in Robots.Skip(skip).Take(10)) {
-                while (!robot.HasReachedExit) {
-                    this.MoveRobot(robot);
-                }
+            foreach (var thread in threads)
+            {
+                thread.Join();
             }
 
-            if (isLastThread) {
-                Reached(this, new RobotMoveArgs(0, 0, 0));
+            base.OnReached();
+        }
+
+        private void Run(List<Robot> robots) {
+            foreach (var robot in robots)
+            {
+                while (!robot.HasReachedExit)
+                {
+                    base.MoveRobot(Thread.CurrentThread.ManagedThreadId, robot);
+                }
             }
         }
 
         
 
-        private void MoveRobot(Robot robot) {
-            lock (robot) {
-                robot.Move();
-                Moved(this, new RobotMoveArgs(robot.Id, robot.CurrentPosition.X, robot.CurrentPosition.Y));
-            }
-        }
+
     }
 }

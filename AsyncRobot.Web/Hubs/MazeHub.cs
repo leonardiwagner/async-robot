@@ -50,7 +50,11 @@ namespace AsyncRobot.Web.Hubs {
         }
 
         void runner_Moved(object sender, RobotMoveArgs e) {
-            Clients.All.setRobotPosition(e.RobotId, e.X, e.Y);
+            if (e.X%6 == 0 && e.Y%4 == 0)
+            {
+                Clients.All.setRobotPosition(e.ThreadId, e.RobotId, e.X, e.Y);
+            }
+            
         }
 
         private IEnumerable<Robot> readRobotsFromJson(string json) {
@@ -61,7 +65,7 @@ namespace AsyncRobot.Web.Hubs {
             }
 
             var robots = new List<AsyncRobot.Core.Robot>();
-            for (int i = 1; i <= 50; i++) {
+            for (int i = 1; i <= 64; i++) {
                 robots.Add(new Robot(land, i, 1, 18));
             }
 
