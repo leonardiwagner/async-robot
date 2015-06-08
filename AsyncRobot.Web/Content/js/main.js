@@ -1,6 +1,6 @@
 ﻿var phonecatApp = angular.module('asyncRobotApp', [])
 .controller('MainCtrl', function ($scope) {
-    $scope.robotCount = 100;
+    $scope.robotCount = 20;
     $scope.runApproach = "sync";
     $scope.threadCount = 2;
     $scope.status = "SET_OPTIONS_PENDING";

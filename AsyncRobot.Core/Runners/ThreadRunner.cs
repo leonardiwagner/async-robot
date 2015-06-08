@@ -6,50 +6,50 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace AsyncRobot.Core.Runners {
-    /*
+  
     public class ThreadRunner : AbstractRunner
     {
-        private readonly int ThreadCount;
+        public ThreadRunner(Land land) : base(land) { }
 
-        public ThreadRunner(IEnumerable<Robot> robots, int threadCount) {
-            base.Robots = robots;
-            this.ThreadCount = threadCount;
-        }
-
-        public void Run()
+        public void Run(int threadCount)
         {
-            var threads = new List<Thread>();
-            var robotsPerThreads = Robots.Count() / ThreadCount;
-            for (int i = 0; i < this.ThreadCount; i++)
+            var threadRobots = new List<Dictionary<Robot, LandPosition>>();
+            var robotsClone = new Dictionary<Robot, LandPosition>(base.RobotsToRun);
+            var robotsPerThread = base.RobotsToRun.Count / threadCount;
+            for (int i = 0; i < robotsPerThread; i++)
             {
-                var robotsPerThreadsList = Robots.Skip(i * robotsPerThreads).Take(robotsPerThreads).ToList();
-                threads.Add(new Thread(() => Run(robotsPerThreadsList)));
+                //moves robots to thread robots
+                Dictionary<Robot, LandPosition> slicedRobots = robotsClone.Take(robotsPerThread).ToDictionary(x => x.Key, x => x.Value);
+                foreach (var robot in slicedRobots.Keys) robotsClone.Remove(robot);
+                
+                threadRobots.Add(slicedRobots);
             }
 
-            foreach (var thread in threads) {
-                thread.Start();
+            var threads = new List<Thread>();
+            foreach (var threadRobot in threadRobots)
+            {
+                threads.Add(new Thread(() =>
+                {
+                    foreach (var robot in threadRobot)
+                    {
+                        robot.Key.Moved += robot_Moved;
+                        robot.Key.SearchForLandExit(base.RunnerLand, robot.Value);
+                    }
+                }));
             }
 
             foreach (var thread in threads)
             {
-                thread.Join();
-            }
-
-            base.OnReached();
-        }
-
-        private void Run(List<Robot> robots) {
-            foreach (var robot in robots)
-            {
-                while (!robot.HasReachedExit)
-                {
-                    base.MoveRobot(Thread.CurrentThread.ManagedThreadId, robot);
-                }
+                thread.Start();
             }
         }
 
+       
+        void robot_Moved(object sender, RobotMoveArgs e)
+        {
+            base.OnMove(this, e);
+        }
         
 
-
-    }*/
+    }
 }

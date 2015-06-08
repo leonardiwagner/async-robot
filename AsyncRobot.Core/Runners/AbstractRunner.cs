@@ -24,11 +24,7 @@ namespace AsyncRobot.Core.Runners
 
         protected void OnMove(object sender, RobotMoveArgs e)
         {
-            OnRobotMove(sender, e);
+            if(OnRobotMove != null) OnRobotMove(sender, e);
         }
-
-
-
-
     }
 }

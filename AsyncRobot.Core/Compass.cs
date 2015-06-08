@@ -17,7 +17,7 @@ namespace AsyncRobot.Core
             if (currentDirectionInCompass == -1) throw new InvalidDirectionException(currentDirection);
 
             int nextDirection = currentDirectionInCompass + 1;
-            if (nextDirection > Directions.Length)
+            if (nextDirection >= Directions.Length)
             {
                 return Directions[0];
             }

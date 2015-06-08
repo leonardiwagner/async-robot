@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AsyncRobot.Core {
@@ -13,13 +14,13 @@ namespace AsyncRobot.Core {
         
         private readonly Compass compass = new Compass();
         private readonly char firstCompassDirection;
-        private readonly char lastCompassDirection;
+        //private readonly char lastCompassDirection;
 
         public Robot(int id)
         {
             Id = id;
             firstCompassDirection = compass.Directions[0];
-            lastCompassDirection = compass.Directions[compass.Directions.Length - 1];
+            //lastCompassDirection = compass.Directions[compass.Directions.Length - 1];
         }
 
         public void SearchForLandExit(Land land, LandPosition startPosition)
@@ -33,7 +34,7 @@ namespace AsyncRobot.Core {
             bool hasFoundExit = directionToMove == default(char);
             if (hasFoundExit)
             {
-                ReachedExit(this, new RobotMoveArgs(0, Id, 0, 0));
+                //ReachedExit(this, new RobotMoveArgs(0, Id, 0, 0));
                 return;
             }
             else
@@ -42,7 +43,7 @@ namespace AsyncRobot.Core {
                 LandPosition newPosition = MovePosition(land, startPosition, directionToMove);
                 var newBreadcrumb = new List<LandPosition>(breadcrumb) {newPosition};
 
-                Moved(this, new RobotMoveArgs(0, Id, newPosition.X, newPosition.Y));
+                Moved(this, new RobotMoveArgs(Thread.CurrentThread.ManagedThreadId, Id, newPosition.X, newPosition.Y));
                 SearchForLandExit(land, newPosition, newBreadcrumb);
             }
         }
@@ -68,7 +69,7 @@ namespace AsyncRobot.Core {
             }
 
             var nextDirection = compass.GetNextDirection(direction);
-            if (nextDirection == lastCompassDirection)
+            if (nextDirection == firstCompassDirection)
             {
                 //only return the actual direction to move when all directions was seen
                 return shouldGoInThatDirection;

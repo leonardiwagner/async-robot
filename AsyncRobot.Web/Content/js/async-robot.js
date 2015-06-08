@@ -19,7 +19,7 @@ var start = function (robotCount) {
     }
 };
 
-mazeHub.client.setRobotPosition = function (threadId, id, x, y) {
+mazeHub.client.setRobotPosition = function (id, x, y, threadId) {
     setRobotPosition(id, x, y);
     return console.log("[" + threadId + "] [" + id + "] x:" + x + " y:" + y);
 };

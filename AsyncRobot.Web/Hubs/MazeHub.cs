@@ -15,7 +15,7 @@ namespace AsyncRobot.Web.Hubs {
     public class MazeHub : Hub {
         private Stopwatch Stopwatch = new Stopwatch();
 
-        public void Run(string json)
+        public async Task Run(string json)
         {
             var runRequest = new JavaScriptSerializer().Deserialize<RunRequest>(json);
             var land = new AsyncRobot.Core.Land(runRequest.land.width, runRequest.land.height);
@@ -24,11 +24,36 @@ namespace AsyncRobot.Web.Hubs {
                 land.SetPositionType(track.x, track.y, LandPositionType.SPACE);
             }
 
-            var runner = new Core.Runners.BasicRunner(land);
-            runRequest.robots.ForEach(r => runner.AddRobotToRunner(new Robot(r.id), new LandPosition(r.x,r.y)));
-            runner.Run();
-            //Stopwatch.Start();
+            if (runRequest.approach == "sync")
+            {
+                var runner = new Core.Runners.BasicRunner(land);
+                runRequest.robots.ForEach(r => runner.AddRobotToRunner(new Robot(r.id), new LandPosition(r.x, r.y)));
+                runner.OnRobotMove += runner_OnRobotMove;
+                runner.Run();
+            }
+            else if (runRequest.approach == "async")
+            {
+                var runner = new Core.Runners.AsyncRunner(land);
+                runRequest.robots.ForEach(r => runner.AddRobotToRunner(new Robot(r.id), new LandPosition(r.x, r.y)));
+                runner.OnRobotMove += runner_OnRobotMove;
+                await runner.Run();
+            }
+            else if (runRequest.approach == "multithread")
+            {
+                var runner = new Core.Runners.ThreadRunner(land);
+                runRequest.robots.ForEach(r => runner.AddRobotToRunner(new Robot(r.id), new LandPosition(r.x, r.y)));
+                runner.OnRobotMove += runner_OnRobotMove;
+                runner.Run(runRequest.threadCount);
+            }
+
             
+            Stopwatch.Start();
+            
+        }
+
+        void runner_OnRobotMove(object sender, RobotMoveArgs e)
+        {
+            Clients.All.setRobotPosition(e.RobotId, e.X, e.Y, e.ThreadId);
         }
 
 

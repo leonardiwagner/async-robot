@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace AsyncRobot.Core {
                     y++;
                 }
 
-                this.Map.Add(new LandPosition(x, y));
+                this.Map.Add(new LandPosition(x, y, LandPositionType.WALL));
                 x++;
             }
         }
@@ -37,6 +38,7 @@ namespace AsyncRobot.Core {
         }
 
         public LandPositionType GetPositionType(int x, int y) {
+            Debug.Print("x: " + x + " y: " + y);
             var landPosition =  this.Map.SingleOrDefault(position => position.X == x &&
                                                                      position.Y == y);
             if (landPosition != null) {
