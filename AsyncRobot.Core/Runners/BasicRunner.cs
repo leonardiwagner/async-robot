@@ -8,18 +8,19 @@ using System.Threading.Tasks;
 namespace AsyncRobot.Core.Runners {
     public class BasicRunner : AbstractRunner
     {
-        public BasicRunner(IEnumerable<Robot> robots) {
-            this.Robots = robots;
-        }
+        public BasicRunner(Land land) : base(land) { }
 
         public void Run() {
-            foreach (var robot in Robots) {
-                while (!robot.HasReachedExit) {
-                    base.MoveRobot(Thread.CurrentThread.ManagedThreadId, robot);
-                }
+            foreach (var robotToRun in base.RobotsToRun) {
+                robotToRun.Key.Moved += robot_Moved;
+                robotToRun.Key.SearchForLandExit(base.RunnerLand, robotToRun.Value);
             }
+        }
 
-            base.OnReached();
+
+        void robot_Moved(object sender, RobotMoveArgs e)
+        {
+            base.OnMove(this, e);
         }
 
 

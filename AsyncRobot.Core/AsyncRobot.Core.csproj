@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compass.cs" />
+    <Compile Include="InvalidDirectionException.cs" />
     <Compile Include="Land.cs" />
     <Compile Include="LandPosition.cs" />
     <Compile Include="LandPositionType.cs" />

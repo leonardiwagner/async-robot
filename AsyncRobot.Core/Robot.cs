@@ -7,103 +7,98 @@ using System.Threading.Tasks;
 
 namespace AsyncRobot.Core {
     public class Robot {
-        private Land Land;
-        public int Id { get; private set; }
-        public LandPosition CurrentPosition { get; private set; }
-        public List<LandPosition> Breadcrumb { get; private set; }
-
-        public bool HasReachedExit { get; private set; }
-        private char[] Compass;
-        public char Direction { get; set; }
-
+        public readonly int Id;
         public event EventHandler<RobotMoveArgs> Moved;
-        public event EventHandler<RobotMoveArgs> Reached;
+        public event EventHandler<RobotMoveArgs> ReachedExit;
+        
+        private readonly Compass compass = new Compass();
+        private readonly char firstCompassDirection;
+        private readonly char lastCompassDirection;
 
-        public Robot(Land land, int id, int startPositionX, int startPositionY)
+        public Robot(int id)
         {
-            this.Id = id;
-            this.Land = land;
-            this.CurrentPosition = new LandPosition(startPositionX, startPositionY);
-            this.Breadcrumb = new List<LandPosition> { };
-            AddBreadcrumb();
-            
-            this.Compass = new char[]{ 'W', 'N', 'E', 'S'};
-            this.Direction = 'N';
-
-            
+            Id = id;
+            firstCompassDirection = compass.Directions[0];
+            lastCompassDirection = compass.Directions[compass.Directions.Length - 1];
         }
 
-        public void Move() {
-            char directionToMove = this.FindTheBestDirectionToMove();
-            if (directionToMove != default(char))
-            {
-                
-            
-           
-                if (directionToMove == 'W') this.CurrentPosition.X--;
-                if (directionToMove == 'E') this.CurrentPosition.X++;
-                if (directionToMove == 'N') this.CurrentPosition.Y--;
-                if (directionToMove == 'S') this.CurrentPosition.Y++;
+        public void SearchForLandExit(Land land, LandPosition startPosition)
+        {
+            SearchForLandExit(land, startPosition, new List<LandPosition>());
+        }
 
-                AddBreadcrumb();
+        private void SearchForLandExit(Land land, LandPosition startPosition, ICollection<LandPosition> breadcrumb)
+        {
+            char directionToMove = FindTheBestDirectionToMove(land, startPosition, breadcrumb, firstCompassDirection);
+            bool hasFoundExit = directionToMove == default(char);
+            if (hasFoundExit)
+            {
+                ReachedExit(this, new RobotMoveArgs(0, Id, 0, 0));
+                return;
             }
+            else
+            {
+                //do next move to find exit
+                LandPosition newPosition = MovePosition(land, startPosition, directionToMove);
+                var newBreadcrumb = new List<LandPosition>(breadcrumb) {newPosition};
 
-            /*
-            if (this.Moved != null) {
-                Moved(this, new RobotMoveArgs(this.Id, CurrentPosition.X, CurrentPosition.Y));
-            }*/
+                Moved(this, new RobotMoveArgs(0, Id, newPosition.X, newPosition.Y));
+                SearchForLandExit(land, newPosition, newBreadcrumb);
+            }
         }
 
-        public char FindTheBestDirectionToMove()
+        private char FindTheBestDirectionToMove(Land land, LandPosition currentPosition, ICollection<LandPosition> breadcrumb, char direction, int fewerVisitsInAPosition = -1, char shouldGoInThatDirection = 'N')
         {
-            int fewerVisitsInAPosition  = -1;
-            char shouldGoInThatDirection = default(char);
+            var whatRobotSeeInThatDirection = MovePosition(land, currentPosition, direction);
 
-            foreach (char direction in Compass)
+            if (whatRobotSeeInThatDirection.PositionType == LandPositionType.OUT_OF_LIMITS)
             {
-                var whatRobotSeeInThatDirection = SeeLandPosition(direction);
+                return default(char);
+            }
+            if (whatRobotSeeInThatDirection.PositionType == LandPositionType.SPACE)
+            {
+                var howManyTimesRobotWasHere = breadcrumb.Count(position => position.X == whatRobotSeeInThatDirection.X &&
+                                                                            position.Y == whatRobotSeeInThatDirection.Y);
 
-                if (whatRobotSeeInThatDirection.PositionType == LandPositionType.OUT_OF_LIMITS)
+                if (fewerVisitsInAPosition == -1 || howManyTimesRobotWasHere < fewerVisitsInAPosition)
                 {
-                    HasReachedExit = true;
-                    return default(char);
-                }
-                else if (whatRobotSeeInThatDirection.PositionType == LandPositionType.SPACE)
-                {
-
-
-                        var howManyTimesRobotWasHere = this.Breadcrumb.Count(position => position.X == whatRobotSeeInThatDirection.X && position.Y == whatRobotSeeInThatDirection.Y);
-
-                        if (fewerVisitsInAPosition == -1 || howManyTimesRobotWasHere < fewerVisitsInAPosition) {
-                            fewerVisitsInAPosition = howManyTimesRobotWasHere;
-                            shouldGoInThatDirection = direction;
-                        }
-
-                    
-
+                    fewerVisitsInAPosition = howManyTimesRobotWasHere;
+                    shouldGoInThatDirection = direction;
                 }
             }
-            return shouldGoInThatDirection;
-        }
 
-        private LandPosition SeeLandPosition(char direction)
-        {
-            int seeX = CurrentPosition.X;
-            int seeY = CurrentPosition.Y;
-            
-            if (direction == 'W') --seeX;
-            if (direction == 'E') ++seeX;
-            if (direction == 'N') --seeY;
-            if (direction == 'S') ++seeY;
-
-            return new LandPosition(seeX, seeY, this.Land.GetPositionType(seeX, seeY));
-        }
-
-        private void AddBreadcrumb() {
-                this.Breadcrumb.Add(new LandPosition(CurrentPosition.X, CurrentPosition.Y));
+            var nextDirection = compass.GetNextDirection(direction);
+            if (nextDirection == lastCompassDirection)
+            {
+                //only return the actual direction to move when all directions was seen
+                return shouldGoInThatDirection;
                 
+            }
+            else
+            {
+                return FindTheBestDirectionToMove(land, currentPosition, breadcrumb, nextDirection, fewerVisitsInAPosition, shouldGoInThatDirection);
+            }
         }
 
+
+        private LandPosition MovePosition(Land land, LandPosition currentPosition, char directionToMove)
+        {
+            LandPosition newPosition;
+            if (directionToMove == 'W')
+                newPosition = new LandPosition(currentPosition.X - 1, currentPosition.Y);
+            else if (directionToMove == 'E')
+                newPosition = new LandPosition(currentPosition.X + 1, currentPosition.Y);
+            else if (directionToMove == 'N')
+                newPosition = new LandPosition(currentPosition.X, currentPosition.Y - 1);
+            else if (directionToMove == 'S')
+                newPosition = new LandPosition(currentPosition.X, currentPosition.Y + 1);
+            else
+                throw new InvalidDirectionException(directionToMove);
+
+            return new LandPosition(newPosition.X, newPosition.Y, land.GetPositionType(newPosition));
+        }
+
+     
 
     }
 }

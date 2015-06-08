@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace AsyncRobot.Core {
     public enum LandPositionType {
-        OUT_OF_LIMITS = 0,
-        WALL = 1,
-        SPACE = 2
+        DEFAULT = 0,
+        OUT_OF_LIMITS = 1,
+        WALL = 2,
+        SPACE = 3,
     }
 }

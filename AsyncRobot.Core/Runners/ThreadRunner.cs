@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace AsyncRobot.Core.Runners {
+    /*
     public class ThreadRunner : AbstractRunner
     {
         private readonly int ThreadCount;
@@ -50,5 +51,5 @@ namespace AsyncRobot.Core.Runners {
         
 
 
-    }
+    }*/
 }

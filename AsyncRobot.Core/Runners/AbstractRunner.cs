@@ -6,22 +6,29 @@ using System.Threading.Tasks;
 
 namespace AsyncRobot.Core.Runners
 {
-    public class AbstractRunner
+    public abstract class AbstractRunner
     {
-        protected IEnumerable<Robot> Robots;
-        public event EventHandler<RobotMoveArgs> Moved;
-        public event EventHandler<RobotMoveArgs> Reached;
+        public event EventHandler<RobotMoveArgs> OnRobotMove;
+        protected readonly Land RunnerLand;
+        protected readonly IDictionary<Robot, LandPosition> RobotsToRun = new Dictionary<Robot, LandPosition>();
 
-        protected void MoveRobot(int threadId, Robot robot)
+        protected AbstractRunner(Land land)
         {
-            robot.Move();
-            Moved(this, new RobotMoveArgs(threadId, robot.Id, robot.CurrentPosition.X, robot.CurrentPosition.Y));
-
+            RunnerLand = land;
         }
 
-        protected void OnReached()
+        public void AddRobotToRunner(Robot robot, LandPosition startPosition)
         {
-            Reached(this, new RobotMoveArgs(0, 0, 0, 0));
+            RobotsToRun.Add(robot, startPosition);
         }
+
+        protected void OnMove(object sender, RobotMoveArgs e)
+        {
+            OnRobotMove(sender, e);
+        }
+
+
+
+
     }
 }

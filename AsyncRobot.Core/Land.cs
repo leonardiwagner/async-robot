@@ -31,6 +31,11 @@ namespace AsyncRobot.Core {
             point.PositionType = positionType;
         }
 
+        public LandPositionType GetPositionType(LandPosition landPosition)
+        {
+            return GetPositionType(landPosition.X, landPosition.Y);
+        }
+
         public LandPositionType GetPositionType(int x, int y) {
             var landPosition =  this.Map.SingleOrDefault(position => position.X == x &&
                                                                      position.Y == y);

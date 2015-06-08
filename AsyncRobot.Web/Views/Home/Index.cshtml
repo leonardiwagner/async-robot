@@ -3,17 +3,86 @@
 }
 <h2>Index</h2>
 
-<input type='number' id='txtMazeRobotCount' value='1' placeholder='robot quantity' class='input-small' />
+<div class="row">
+    <div class="col-md-6">
+        <section id='maze'></section>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Panel title</h3>
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">Robots:</label>
+                        <label class="radio-inline">
+                            <input type="radio" value="50" ng-model="robotCount"> 50
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" value="100" ng-model="robotCount"> 100
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" value="1000" ng-model="robotCount"> 1000
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" value="100000" ng-model="robotCount"> 100000
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">Run:</label>
+                        <label class="radio-inline">
+                            <input type="radio" value="sync" ng-model="runApproach"> Sync
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" value="async" ng-model="runApproach"> Async
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" value="multithread" ng-model="runApproach"> Multi-thread
+                        </label>
+                    </div>
+                    <div class="form-group" ng-show="runApproach == 'multithread'">
+                        <label for="inputEmail3" class="col-sm-2 control-label">Threads:</label>
+                        <label class="radio-inline">
+                            <input type="radio" value="2" ng-model="threadCount"> 2
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" value="4" ng-model="threadCount"> 4
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" value="8" ng-model="threadCount"> 8
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" value="16" ng-model="threadCount"> 16
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" value="32" ng-model="threadCount"> 32
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-default" ng-click="setOptions()">Set Options / Reset</button>
+                        <button class="btn btn-default" ng-click="run()"  ng-disabled="status != 'RUN_PENDING'">Run Robots</button>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                            <span class="sr-only">60% Complete (warning)</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-<button type='button' id='btnMazeRun' class='btn btn-primary' onclick="run();">Run!</button> 
-<button type='button' id='btnMazeRun2' class='btn btn-primary' onclick="runAsync();">Run Async!</button> 
-<button type='button' id='btnMazeRun2' class='btn btn-primary' onclick="runThread(2);">Run by 2 Threads!</button> 
-<button type='button' id='btnMazeRun2' class='btn btn-primary' onclick="runThread(4);">Run by 4 Threads!</button> 
-<button type='button' id='btnMazeRun2' class='btn btn-primary' onclick="runThread(8);">Run by 8 Threads!</button> 
-<button type='button' id='btnMazeRun2' class='btn btn-primary' onclick="runThread(16);">Run by 16 Threads!</button> 
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Runner Results</h3>
+            </div>
+            <div class="panel-body">
+                
+            </div>
+        </div>
 
-<div id="time">
-    
+
+    </div>
 </div>
 
-<section id='maze'></section>
+

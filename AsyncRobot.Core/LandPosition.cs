@@ -11,7 +11,7 @@ namespace AsyncRobot.Core
         public int Y { get; set; }
         public LandPositionType PositionType { get; set; }
 
-        public LandPosition(int x, int y, LandPositionType positionType = LandPositionType.WALL) {
+        public LandPosition(int x, int y, LandPositionType positionType = LandPositionType.DEFAULT) {
             this.X = x;
             this.Y = y;
             this.PositionType = positionType;

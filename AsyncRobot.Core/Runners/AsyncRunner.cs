@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace AsyncRobot.Core.Runners {
+    /*
     public class AsyncRunner : AbstractRunner
     {
         public AsyncRunner(IEnumerable<Robot> robots) {
@@ -31,8 +32,8 @@ namespace AsyncRobot.Core.Runners {
                 {
                     while (!robot.HasReachedExit)
                     {
-                        robot.Move();
-                        if (robot.CurrentPosition.X == 18 || robot.CurrentPosition.X == 19)
+                        robot.FindExit();
+                        if (robot.CurrentPosition.X % 2 == 0 || robot.CurrentPosition.X == 19)
                         {
                             base.MoveRobot(Thread.CurrentThread.ManagedThreadId, robot);
                         }
@@ -45,5 +46,5 @@ namespace AsyncRobot.Core.Runners {
         }
         
 
-    }
+    }*/
 }
